@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../data/models/attendance_model.dart';
 import '../../data/repositories/attendance_repository.dart';
+import '../../data/datasources/firebase_service.dart';
 
 class AttendanceProvider extends ChangeNotifier {
   final AttendanceRepository _repository = AttendanceRepository();
@@ -88,5 +89,3 @@ class AttendanceProvider extends ChangeNotifier {
     }
   }
 }
-
-import '../../data/datasources/firebase_service.dart';

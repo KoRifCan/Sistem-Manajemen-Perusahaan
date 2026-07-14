@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -42,13 +43,13 @@ class FirebaseService {
   static CollectionReference get roles => firestore.collection('roles');
   static CollectionReference get permissions_col => firestore.collection('permissions');
 
-  static Future<String> uploadFile(String path, String fileName, List<int> bytes) async {
+  static Future<String> uploadFile(String path, String fileName, Uint8List bytes) async {
     final ref = storage.ref().child('$path/$fileName');
     await ref.putData(bytes);
     return await ref.getDownloadURL();
   }
 
-  static Future<String> uploadImage(String path, String fileName, List<int> bytes) async {
+  static Future<String> uploadImage(String path, String fileName, Uint8List bytes) async {
     final ref = storage.ref().child('$path/$fileName');
     await ref.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
     return await ref.getDownloadURL();

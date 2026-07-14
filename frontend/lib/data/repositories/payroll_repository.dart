@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import '../datasources/firebase_service.dart';
 import '../models/payroll_model.dart';
 
@@ -35,14 +36,6 @@ class PayrollRepository {
 
   Future<void> processPayroll(String periodId) async {
     await FirebaseService.payrollPeriods.doc(periodId).update({'status': 'processing'});
-    // Firebase Function akan handle perhitungan
-    final result = await FirebaseService.firestore
-        .collection('payroll_periods')
-        .doc(periodId)
-        .collection('results')
-        .get();
-    // Update status setelah fungsi selesai
-    await FirebaseService.payrollPeriods.doc(periodId).update({'status': 'completed'});
   }
 
   Future<List<Map<String, dynamic>>> getSalaryComponents() async {
@@ -51,8 +44,7 @@ class PayrollRepository {
   }
 
   Future<String> generatePayslipPDF(String payslipId) async {
-    // Firebase Function generate PDF
-    final function = FirebaseService.firestore.functions.httpsCallable('generatePayslipPDF');
+    final function = FirebaseFunctions.instance.httpsCallable('generatePayslipPDF');
     final result = await function.call({'payslipId': payslipId});
     return result.data['url'];
   }

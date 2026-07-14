@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../data/datasources/firebase_service.dart';
@@ -27,7 +28,7 @@ class DocumentProvider extends ChangeNotifier {
     required String employeeId,
     required String name,
     required String category,
-    required List<int> bytes,
+    required Uint8List bytes,
     required String fileName,
   }) async {
     try {

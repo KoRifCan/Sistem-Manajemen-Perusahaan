@@ -45,7 +45,7 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
               DropdownButtonFormField<String>(
                 value: _leaveType,
                 decoration: const InputDecoration(labelText: 'Jenis Cuti *'),
-                items: AppConstants.leaveTypes.map((v) => DropdownMenuItem(value: v, child: Text(v))).toList(),
+                items: AppConstants.leaveTypes.map((v) => DropdownMenuItem<String>(value: v, child: Text(v))).toList(),
                 onChanged: (v) => setState(() => _leaveType = v),
                 validator: (v) => v == null ? 'Pilih jenis cuti' : null,
               ),
@@ -83,8 +83,10 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _contactController,
-                decoration: const InputDecoration(labelText: 'Kontak Selama Cuti'),
-                hintText: 'No. HP yang bisa dihubungi',
+                decoration: const InputDecoration(
+                  labelText: 'Kontak Selama Cuti',
+                  hintText: 'No. HP yang bisa dihubungi',
+                ),
               ),
               const SizedBox(height: 16),
               Card(
