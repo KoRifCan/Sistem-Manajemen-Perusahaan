@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     return Scaffold(
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       backgroundColor: isDark ? const Color(0xFF0f0f1a) : const Color(0xFFf0f2f5),
       body: SafeArea(
         child: LayoutBuilder(
