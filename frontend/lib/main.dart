@@ -19,7 +19,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: firebaseOptions);
+  try {
+    await Firebase.initializeApp(options: firebaseOptions);
+  } catch (e) {
+    debugPrint('Firebase init error: $e');
+  }
   final settings = SettingsProvider();
   await settings.init();
   runApp(SistemManajemenPerusahaanApp(settings: settings));
