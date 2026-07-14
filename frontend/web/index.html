@@ -94,6 +94,18 @@
 </head>
 <body>
   <script>
+    var _installPrompt = null;
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      _installPrompt = e;
+    });
+    window.installPwa = function() {
+      if (_installPrompt) {
+        _installPrompt.prompt();
+        _installPrompt.userChoice.then(function() { _installPrompt = null; });
+      }
+    };
+    window.reloadPage = function() { location.reload(); };
     (function() {
       var redirect = sessionStorage.redirect;
       delete sessionStorage.redirect;

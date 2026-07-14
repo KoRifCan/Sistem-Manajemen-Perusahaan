@@ -5,6 +5,8 @@ import '../../providers/auth_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../widgets/company_logo.dart';
 import '../../widgets/theme_toggle.dart';
+import '../../widgets/action_button.dart';
+import '../../utils/web_utils.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -178,6 +180,23 @@ class _LoginPageState extends State<LoginPage> {
                             child: const Text('Belum punya akun? Daftar'),
                           ),
                           const Spacer(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ActionButton(
+                                icon: Icons.download_outlined,
+                                label: 'Install',
+                                onTap: webInstallPwa,
+                              ),
+                              const SizedBox(width: 24),
+                              ActionButton(
+                                icon: Icons.refresh_outlined,
+                                label: 'Reload',
+                                onTap: webReload,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
                           Text(
                             'PT. KoRifCan',
                             style: TextStyle(color: Colors.grey.shade400, fontSize: 11),
