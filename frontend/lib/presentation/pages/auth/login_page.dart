@@ -94,9 +94,13 @@ class _LoginPageState extends State<LoginPage> {
                         padding: const EdgeInsets.all(12),
                         child: const Icon(Icons.lock_outlined, size: 20),
                       ),
-                      suffixIcon: IconButton(
-                        icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      suffixIcon: InkWell(
+                        onTap: () => setState(() => _obscurePassword = !_obscurePassword),
+                        borderRadius: BorderRadius.circular(20),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                        ),
                       ),
                     ),
                     validator: (v) => (v == null || v.isEmpty) ? 'Password wajib diisi' : null,
@@ -163,7 +167,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 32),
                   Text(
-                    'PT. Karya Inovasi Digital',
+                    'PT. KoRifCan',
                     style: TextStyle(color: Colors.grey.shade400, fontSize: 11),
                   ),
                 ],

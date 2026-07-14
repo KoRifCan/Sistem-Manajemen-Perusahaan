@@ -161,7 +161,7 @@ class SettingsPage extends StatelessWidget {
               children: [
                 CompanyLogo(size: 36),
                 SizedBox(height: 8),
-                Text('© 2024 PT. Karya Inovasi Digital', style: TextStyle(fontSize: 11)),
+                Text('© 2024 PT. KoRifCan', style: TextStyle(fontSize: 11)),
               ],
             ),
           ),

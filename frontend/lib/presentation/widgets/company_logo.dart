@@ -38,7 +38,7 @@ class CompanyLogo extends StatelessWidget {
         if (showText) ...[
           const SizedBox(height: 6),
           Text(
-            'PT. Karya Inovasi Digital',
+            'PT. KoRifCan',
             style: TextStyle(
               fontSize: size * 0.22,
               fontWeight: FontWeight.bold,
@@ -98,7 +98,7 @@ class CompanyLogoHorizontal extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'PT. Karya Inovasi Digital',
+              'PT. KoRifCan',
               style: TextStyle(
                 fontSize: size * 0.35,
                 fontWeight: FontWeight.bold,

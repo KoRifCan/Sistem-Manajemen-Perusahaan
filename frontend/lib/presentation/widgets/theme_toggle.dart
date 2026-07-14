@@ -21,7 +21,7 @@ class _PremiumThemeToggleState extends State<PremiumThemeToggle> with SingleTick
     final settings = context.read<SettingsProvider>();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 400),
     );
     _scaleAnimation = Tween<double>(begin: 1.0, end: 0.85).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
@@ -46,27 +46,33 @@ class _PremiumThemeToggleState extends State<PremiumThemeToggle> with SingleTick
 
     return GestureDetector(
       onTap: () {
-        final wasDark = isDark;
-        settings.toggleTheme();
-        if (wasDark) {
-          _controller.reverse();
-        } else {
-          _controller.forward();
-        }
+        setState(() {
+          if (isDark) {
+            _controller.reverse().then((_) {
+              if (mounted) settings.toggleTheme();
+            });
+          } else {
+            _controller.forward().then((_) {
+              if (mounted) settings.toggleTheme();
+            });
+          }
+        });
       },
       child: AnimatedBuilder(
         animation: _controller,
         builder: (context, child) {
+          final progress = _controller.value;
+          final isAnimDark = progress > 0.5;
           return Transform.scale(
-            scale: _scaleAnimation.value,
+            scale: 1.0 - (0.15 * progress),
             child: Transform.rotate(
-              angle: _rotationAnimation.value * 3.14159,
+              angle: progress * 1.57,
               child: Container(
                 width: widget.size,
                 height: widget.size,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: isDark
+                    colors: isAnimDark
                         ? [const Color(0xFF1a1a2e), const Color(0xFF16213e)]
                         : [const Color(0xFFfef3c7), const Color(0xFFfde68a)],
                     begin: Alignment.topLeft,
@@ -74,13 +80,13 @@ class _PremiumThemeToggleState extends State<PremiumThemeToggle> with SingleTick
                   ),
                   borderRadius: BorderRadius.circular(widget.size * 0.3),
                   border: Border.all(
-                    color: isDark
+                    color: isAnimDark
                         ? Colors.white.withOpacity(0.1)
                         : Colors.amber.withOpacity(0.3),
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: isDark
+                      color: isAnimDark
                           ? Colors.blue.withOpacity(0.2)
                           : Colors.amber.withOpacity(0.3),
                       blurRadius: 8,
@@ -90,9 +96,9 @@ class _PremiumThemeToggleState extends State<PremiumThemeToggle> with SingleTick
                 ),
                 child: Center(
                   child: Icon(
-                    isDark ? Icons.dark_mode : Icons.light_mode,
+                    isAnimDark ? Icons.dark_mode : Icons.light_mode,
                     size: widget.size * 0.5,
-                    color: isDark ? const Color(0xFFfbbf24) : const Color(0xFFf59e0b),
+                    color: isAnimDark ? const Color(0xFFfbbf24) : const Color(0xFFf59e0b),
                   ),
                 ),
               ),

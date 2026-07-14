@@ -111,7 +111,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   children: [
                     Icon(Icons.business_center, size: 12, color: Colors.white.withOpacity(0.7)),
                     const SizedBox(width: 4),
-                    Text('PT. Karya Inovasi Digital', style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 11)),
+                    Text('PT. KoRifCan', style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 11)),
                   ],
                 ),
               ),

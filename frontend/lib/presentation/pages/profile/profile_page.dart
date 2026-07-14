@@ -105,7 +105,7 @@ class ProfilePage extends StatelessWidget {
                   const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('PT. Karya Inovasi Digital', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                      Text('PT. KoRifCan', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                       Text('Sistem Manajemen Perusahaan', style: TextStyle(fontSize: 12)),
                     ],
                   ),

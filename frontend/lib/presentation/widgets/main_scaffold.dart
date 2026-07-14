@@ -189,7 +189,7 @@ class MainScaffold extends StatelessWidget {
                         children: [
                           Icon(Icons.business_center, size: 16, color: Colors.white70),
                           SizedBox(width: 6),
-                          Text('PT. Karya Inovasi Digital', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                          Text('PT. KoRifCan', style: TextStyle(color: Colors.white70, fontSize: 12)),
                         ],
                       ),
                     ],

@@ -20,6 +20,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {
@@ -107,9 +108,13 @@ class _RegisterPageState extends State<RegisterPage> {
                         padding: const EdgeInsets.all(12),
                         child: const Icon(Icons.lock_outlined, size: 20),
                       ),
-                      suffixIcon: IconButton(
-                        icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      suffixIcon: InkWell(
+                        onTap: () => setState(() => _obscurePassword = !_obscurePassword),
+                        borderRadius: BorderRadius.circular(20),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                        ),
                       ),
                     ),
                     validator: (v) {
@@ -121,12 +126,20 @@ class _RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _confirmPasswordController,
-                    obscureText: true,
+                    obscureText: _obscureConfirmPassword,
                     decoration: InputDecoration(
                       labelText: 'Konfirmasi Password',
                       prefixIcon: Container(
                         padding: const EdgeInsets.all(12),
                         child: const Icon(Icons.lock_outlined, size: 20),
+                      ),
+                      suffixIcon: InkWell(
+                        onTap: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                        borderRadius: BorderRadius.circular(20),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Icon(_obscureConfirmPassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                        ),
                       ),
                     ),
                     validator: (v) {
@@ -187,7 +200,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 32),
                   Text(
-                    'PT. Karya Inovasi Digital',
+                    'PT. KoRifCan',
                     style: TextStyle(color: Colors.grey.shade400, fontSize: 11),
                   ),
                 ],
