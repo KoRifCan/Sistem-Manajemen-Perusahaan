@@ -208,7 +208,7 @@ class SettingsPage extends StatelessWidget {
                             child: Icon(item.icon, size: 20, color: theme.colorScheme.primary),
                           ),
                           title: Text(item.title, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
-                          subtitle: item.subtitle != null ? Text(item.subtitle, style: const TextStyle(fontSize: 12)) : null,
+                          subtitle: item.subtitle != null ? Text(item.subtitle!, style: const TextStyle(fontSize: 12)) : null,
                           trailing: item.trailing ?? const Icon(Icons.chevron_right, size: 20),
                           onTap: item.onTap,
                         )
@@ -222,7 +222,7 @@ class SettingsPage extends StatelessWidget {
                             child: Icon(item.icon, size: 20, color: theme.colorScheme.primary),
                           ),
                           title: Text(item.title, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
-                          subtitle: item.subtitle != null ? Text(item.subtitle, style: const TextStyle(fontSize: 12)) : null,
+                          subtitle: item.subtitle != null ? Text(item.subtitle!, style: const TextStyle(fontSize: 12)) : null,
                           trailing: item.trailing,
                         ),
                 ],

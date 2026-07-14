@@ -116,12 +116,6 @@ class AppTheme {
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: surfaceLight,
         indicatorColor: primaryBlue.withOpacity(0.1),
-        labelTextStyle: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: primaryBlue);
-          }
-          return GoogleFonts.inter(fontSize: 11, color: Colors.grey.shade600);
-        }),
       ),
       dividerTheme: DividerThemeData(color: Colors.grey.shade200, thickness: 1, space: 1),
       chipTheme: ChipThemeData(
@@ -236,15 +230,9 @@ class AppTheme {
           return GoogleFonts.inter(fontSize: 11, color: Colors.grey.shade400);
         }),
       ),
-      navigationRailTheme: NavigationRailThemeData(
+      navigationRailTheme: const NavigationRailThemeData(
         backgroundColor: navDark,
-        indicatorColor: primaryBlue.withOpacity(0.2),
-        labelTextStyle: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: primaryBlue);
-          }
-          return GoogleFonts.inter(fontSize: 11, color: Colors.grey.shade400);
-        }),
+        indicatorColor: Color(0xFF1a73e8),
       ),
       dividerTheme: DividerThemeData(color: Colors.grey.shade800, thickness: 1, space: 1),
       chipTheme: ChipThemeData(
