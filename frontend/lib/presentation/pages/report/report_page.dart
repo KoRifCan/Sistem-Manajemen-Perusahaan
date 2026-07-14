@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../../core/theme/app_theme.dart';
@@ -19,25 +20,25 @@ class ReportPage extends StatelessWidget {
           children: [
             Text('Laporan', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
             const SizedBox(height: 16),
-            _buildReportCard(context, Icons.people, 'Laporan Karyawan', 'Data karyawan per departemen', AppTheme.cardColors[0]),
-            _buildReportCard(context, Icons.fingerprint, 'Laporan Absensi', 'Rekap kehadiran per periode', AppTheme.cardColors[1]),
-            _buildReportCard(context, Icons.beach_access, 'Laporan Cuti', 'Riwayat cuti karyawan', AppTheme.cardColors[2]),
-            _buildReportCard(context, Icons.monetization_on, 'Laporan Payroll', 'Summary gaji & PPh 21', AppTheme.cardColors[3]),
-            _buildReportCard(context, Icons.inventory_2, 'Laporan Aset', 'Daftar aset & peminjaman', AppTheme.cardColors[4]),
-            _buildReportCard(context, Icons.assessment, 'Laporan BPJS', 'Iuran BPJS Kesehatan & TK', AppTheme.cardColors[5]),
+            _buildReportCard(context, Icons.people, 'Laporan Karyawan', 'Data karyawan per departemen', AppTheme.cardColors[0], () => context.go('/employees')),
+            _buildReportCard(context, Icons.fingerprint, 'Laporan Absensi', 'Rekap kehadiran per periode', AppTheme.cardColors[1], () => context.go('/attendance')),
+            _buildReportCard(context, Icons.beach_access, 'Laporan Cuti', 'Riwayat cuti karyawan', AppTheme.cardColors[2], () => context.go('/leaves')),
+            _buildReportCard(context, Icons.monetization_on, 'Laporan Payroll', 'Summary gaji & PPh 21', AppTheme.cardColors[3], () => context.go('/payroll')),
+            _buildReportCard(context, Icons.inventory_2, 'Laporan Aset', 'Daftar aset & peminjaman', AppTheme.cardColors[4], () => context.go('/assets')),
+            _buildReportCard(context, Icons.assessment, 'Laporan BPJS', 'Iuran BPJS Kesehatan & TK', AppTheme.cardColors[5], () {}),
             if (isHR) ...[
               const SizedBox(height: 16),
               Text('Export', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
               const SizedBox(height: 12),
               OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () => _showExportInfo(context, 'Excel'),
                 icon: const Icon(Icons.table_chart),
                 label: const Text('Export Excel'),
                 style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 48)),
               ),
               const SizedBox(height: 12),
               OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () => _showExportInfo(context, 'PDF'),
                 icon: const Icon(Icons.picture_as_pdf),
                 label: const Text('Export PDF'),
                 style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 48)),
@@ -49,7 +50,7 @@ class ReportPage extends StatelessWidget {
     );
   }
 
-  Widget _buildReportCard(BuildContext context, IconData icon, String title, String subtitle, Color color) {
+  Widget _buildReportCard(BuildContext context, IconData icon, String title, String subtitle, Color color, VoidCallback onTap) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4),
       child: ListTile(
@@ -61,8 +62,14 @@ class ReportPage extends StatelessWidget {
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
         subtitle: Text(subtitle),
         trailing: const Icon(Icons.chevron_right),
-        onTap: () {},
+        onTap: onTap,
       ),
+    );
+  }
+
+  void _showExportInfo(BuildContext context, String format) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Export $format akan tersedia di update berikutnya')),
     );
   }
 }

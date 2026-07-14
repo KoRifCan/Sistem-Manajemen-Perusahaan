@@ -16,22 +16,24 @@ class MainScaffold extends StatelessWidget {
     final auth = context.watch<AuthProvider>();
     final notif = context.watch<NotificationProvider>();
     final isDark = context.watch<SettingsProvider>().isDark;
+    final role = auth.user?.role;
+    final navItems = _navItemsForRole(role);
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth > 768;
-        return isWide ? _buildDesktop(context, auth, notif, isDark) : _buildMobile(context, auth, notif, isDark);
+        return isWide ? _buildDesktop(context, auth, notif, isDark, navItems) : _buildMobile(context, auth, notif, isDark, navItems);
       },
     );
   }
 
-  Widget _buildDesktop(BuildContext context, AuthProvider auth, NotificationProvider notif, bool isDark) {
+  Widget _buildDesktop(BuildContext context, AuthProvider auth, NotificationProvider notif, bool isDark, List<_NavItem> navItems) {
     return Scaffold(
       body: Row(
         children: [
           NavigationRail(
-            selectedIndex: _getSelectedIndex(context),
-            onDestinationSelected: (index) => _onNavigate(context, index),
+            selectedIndex: _getSelectedIndex(context, navItems),
+            onDestinationSelected: (index) => _onNavigate(context, index, navItems),
             labelType: NavigationRailLabelType.all,
             leading: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
@@ -52,7 +54,7 @@ class MainScaffold extends StatelessWidget {
                 ],
               ),
             ),
-            destinations: _navItems.map((item) => NavigationRailDestination(
+            destinations: navItems.map((item) => NavigationRailDestination(
               icon: Icon(item.icon),
               selectedIcon: Icon(item.activeIcon),
               label: Text(item.label, style: const TextStyle(fontSize: 11)),
@@ -72,7 +74,7 @@ class MainScaffold extends StatelessWidget {
     );
   }
 
-  Widget _buildMobile(BuildContext context, AuthProvider auth, NotificationProvider notif, bool isDark) {
+  Widget _buildMobile(BuildContext context, AuthProvider auth, NotificationProvider notif, bool isDark, List<_NavItem> navItems) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -92,7 +94,7 @@ class MainScaffold extends StatelessWidget {
               child: const Icon(Icons.business_center, size: 16, color: Colors.white),
             ),
             const SizedBox(width: 8),
-            Text(_getTitle(context)),
+            Text(_getTitle(context, navItems)),
           ],
         ),
         leading: Builder(
@@ -198,19 +200,19 @@ class MainScaffold extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            ..._navItems.map((item) => ListTile(
+            ...navItems.map((item) => ListTile(
               leading: Container(
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: _getSelectedIndex(context) == _navItems.indexOf(item)
+                  color: _getSelectedIndex(context, navItems) == navItems.indexOf(item)
                       ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   item.icon,
-                  color: _getSelectedIndex(context) == _navItems.indexOf(item)
+                  color: _getSelectedIndex(context, navItems) == navItems.indexOf(item)
                       ? Theme.of(context).colorScheme.primary
                       : null,
                 ),
@@ -218,16 +220,16 @@ class MainScaffold extends StatelessWidget {
               title: Text(
                 item.label,
                 style: TextStyle(
-                  fontWeight: _getSelectedIndex(context) == _navItems.indexOf(item) ? FontWeight.w600 : FontWeight.normal,
-                  color: _getSelectedIndex(context) == _navItems.indexOf(item)
+                  fontWeight: _getSelectedIndex(context, navItems) == navItems.indexOf(item) ? FontWeight.w600 : FontWeight.normal,
+                  color: _getSelectedIndex(context, navItems) == navItems.indexOf(item)
                       ? Theme.of(context).colorScheme.primary
                       : null,
                 ),
               ),
-              selected: _getSelectedIndex(context) == _navItems.indexOf(item),
+              selected: _getSelectedIndex(context, navItems) == navItems.indexOf(item),
               onTap: () {
                 Navigator.pop(context);
-                _onNavigate(context, _navItems.indexOf(item));
+                _onNavigate(context, navItems.indexOf(item), navItems);
               },
             )),
             const Divider(),
@@ -268,13 +270,13 @@ class MainScaffold extends StatelessWidget {
         ),
       ),
       body: child,
-      bottomNavigationBar: _buildBottomNav(context),
+      bottomNavigationBar: _buildBottomNav(context, navItems),
     );
   }
 
-  Widget _buildBottomNav(BuildContext context) {
-    final selected = _getSelectedIndex(context);
-    final mobileItems = _navItems.where((item) => item.showBottomNav).toList();
+  Widget _buildBottomNav(BuildContext context, List<_NavItem> navItems) {
+    final selected = _getSelectedIndex(context, navItems);
+    final mobileItems = navItems.where((item) => item.showBottomNav).toList();
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -282,10 +284,10 @@ class MainScaffold extends StatelessWidget {
         ),
       ),
       child: BottomNavigationBar(
-        currentIndex: mobileItems.indexOf(_navItems[selected]),
+        currentIndex: mobileItems.indexOf(navItems[selected]),
         onTap: (index) {
-          final item = _navItems.where((i) => i.showBottomNav).toList()[index];
-          _onNavigate(context, _navItems.indexOf(item));
+          final item = navItems.where((i) => i.showBottomNav).toList()[index];
+          _onNavigate(context, navItems.indexOf(item), navItems);
         },
         items: mobileItems.map((item) => BottomNavigationBarItem(
           icon: Icon(item.icon),
@@ -296,21 +298,21 @@ class MainScaffold extends StatelessWidget {
     );
   }
 
-  int _getSelectedIndex(BuildContext context) {
+  int _getSelectedIndex(BuildContext context, List<_NavItem> navItems) {
     final location = GoRouterState.of(context).uri.toString();
-    final idx = _navItems.indexWhere((item) => location.startsWith(item.path));
+    final idx = navItems.indexWhere((item) => location.startsWith(item.path));
     return idx >= 0 ? idx : 0;
   }
 
-  String _getTitle(BuildContext context) {
+  String _getTitle(BuildContext context, List<_NavItem> navItems) {
     final location = GoRouterState.of(context).uri.toString();
-    final item = _navItems.firstWhere((item) => location.startsWith(item.path), orElse: () => _navItems[0]);
+    final item = navItems.firstWhere((item) => location.startsWith(item.path), orElse: () => navItems[0]);
     return item.label;
   }
 
-  void _onNavigate(BuildContext context, int index) {
-    if (index >= 0 && index < _navItems.length) {
-      context.go(_navItems[index].path);
+  void _onNavigate(BuildContext context, int index, List<_NavItem> navItems) {
+    if (index >= 0 && index < navItems.length) {
+      context.go(navItems[index].path);
     }
   }
 }
@@ -321,6 +323,7 @@ class _NavItem {
   final IconData icon;
   final IconData activeIcon;
   final bool showBottomNav;
+  final List<String>? roles;
 
   const _NavItem({
     required this.label,
@@ -328,19 +331,30 @@ class _NavItem {
     required this.icon,
     required this.activeIcon,
     this.showBottomNav = true,
+    this.roles,
   });
+
+  bool canAccess(String? role) {
+    if (roles == null) return true;
+    if (role == null) return false;
+    return roles!.contains(role);
+  }
+}
+
+List<_NavItem> _navItemsForRole(String? role) {
+  return _navItems.where((item) => item.canAccess(role)).toList();
 }
 
 const List<_NavItem> _navItems = [
   _NavItem(label: 'Dashboard', path: '/dashboard', icon: Icons.dashboard_outlined, activeIcon: Icons.dashboard),
-  _NavItem(label: 'Karyawan', path: '/employees', icon: Icons.people_outlined, activeIcon: Icons.people),
-  _NavItem(label: 'Absensi', path: '/attendance', icon: Icons.fingerprint_outlined, activeIcon: Icons.fingerprint),
-  _NavItem(label: 'Cuti', path: '/leaves', icon: Icons.beach_access_outlined, activeIcon: Icons.beach_access),
-  _NavItem(label: 'Payroll', path: '/payroll', icon: Icons.account_balance_wallet_outlined, activeIcon: Icons.account_balance_wallet),
-  _NavItem(label: 'Approval', path: '/approvals', icon: Icons.checklist_outlined, activeIcon: Icons.checklist),
-  _NavItem(label: 'Organisasi', path: '/organization', icon: Icons.account_tree_outlined, activeIcon: Icons.account_tree),
-  _NavItem(label: 'Aset', path: '/assets', icon: Icons.inventory_2_outlined, activeIcon: Icons.inventory_2),
-  _NavItem(label: 'Dokumen', path: '/documents', icon: Icons.folder_outlined, activeIcon: Icons.folder),
-  _NavItem(label: 'Laporan', path: '/reports', icon: Icons.bar_chart_outlined, activeIcon: Icons.bar_chart, showBottomNav: false),
+  _NavItem(label: 'Karyawan', path: '/employees', icon: Icons.people_outlined, activeIcon: Icons.people, roles: ['super_admin', 'director', 'manager', 'hr']),
+  _NavItem(label: 'Absensi', path: '/attendance', icon: Icons.fingerprint_outlined, activeIcon: Icons.fingerprint, roles: ['super_admin', 'director', 'manager', 'hr', 'staff']),
+  _NavItem(label: 'Cuti', path: '/leaves', icon: Icons.beach_access_outlined, activeIcon: Icons.beach_access, roles: ['super_admin', 'director', 'manager', 'hr', 'staff']),
+  _NavItem(label: 'Payroll', path: '/payroll', icon: Icons.account_balance_wallet_outlined, activeIcon: Icons.account_balance_wallet, roles: ['super_admin', 'director', 'hr', 'finance', 'staff']),
+  _NavItem(label: 'Approval', path: '/approvals', icon: Icons.checklist_outlined, activeIcon: Icons.checklist, roles: ['super_admin', 'director', 'manager', 'hr', 'finance', 'staff']),
+  _NavItem(label: 'Organisasi', path: '/organization', icon: Icons.account_tree_outlined, activeIcon: Icons.account_tree, roles: ['super_admin', 'hr']),
+  _NavItem(label: 'Aset', path: '/assets', icon: Icons.inventory_2_outlined, activeIcon: Icons.inventory_2, roles: ['super_admin', 'manager', 'staff']),
+  _NavItem(label: 'Dokumen', path: '/documents', icon: Icons.folder_outlined, activeIcon: Icons.folder, roles: ['super_admin', 'manager', 'hr', 'staff']),
+  _NavItem(label: 'Laporan', path: '/reports', icon: Icons.bar_chart_outlined, activeIcon: Icons.bar_chart, showBottomNav: false, roles: ['super_admin', 'director', 'hr', 'finance']),
   _NavItem(label: 'Profile', path: '/profile', icon: Icons.person_outlined, activeIcon: Icons.person, showBottomNav: false),
 ];

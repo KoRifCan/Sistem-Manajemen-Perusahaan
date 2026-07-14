@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../providers/payroll_provider.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../core/theme/app_theme.dart';
@@ -27,8 +28,8 @@ class PayslipDetailPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Slip Gaji'),
         actions: [
-          IconButton(icon: const Icon(Icons.picture_as_pdf), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.share), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.picture_as_pdf), onPressed: () => _exportPdf(context, payslip.id)),
+          IconButton(icon: const Icon(Icons.share), onPressed: () => _sharePayslip(context, payslip)),
         ],
       ),
       body: SingleChildScrollView(
@@ -109,6 +110,16 @@ class PayslipDetailPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _exportPdf(BuildContext context, String id) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('PDF akan tersedia di update berikutnya')),
+    );
+  }
+
+  void _sharePayslip(BuildContext context, dynamic payslip) {
+    Share.share('Slip Gaji ${Helpers.formatMonthYear(payslip.createdAt)} - ${Helpers.formatCurrency(payslip.netSalary)}');
   }
 
   Widget _buildDetailRow(String label, String value, {bool bold = false, Color? color, double fontSize = 14}) {

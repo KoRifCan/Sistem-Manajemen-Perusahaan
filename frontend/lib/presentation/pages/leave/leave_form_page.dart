@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:file_picker/file_picker.dart';
 import '../../providers/leave_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../../core/constants/app_constants.dart';
@@ -95,7 +96,18 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
                   title: const Text('Lampiran (opsional)'),
                   subtitle: const Text('Upload surat dokter / dokumen pendukung'),
                   trailing: const Icon(Icons.attach_file),
-                  onTap: () {},
+                  onTap: () async {
+                final result = await FilePicker.platform.pickFiles(
+                  type: FileType.custom,
+                  allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
+                  withData: true,
+                );
+                if (mounted && result != null && result.files.isNotEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${result.files.first.name} siap diupload')),
+                  );
+                }
+              },
                 ),
               ),
             ],

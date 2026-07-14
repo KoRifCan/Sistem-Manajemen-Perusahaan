@@ -75,7 +75,7 @@ class ProfilePage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             _buildMenuCard(context, [
-              _MenuData(Icons.edit_outlined, 'Edit Profil', () {}),
+              _MenuData(Icons.edit_outlined, 'Edit Profil', () => context.go('/settings')),
               _MenuData(Icons.document_scanner_outlined, 'Dokumen Saya', () => context.go('/documents')),
               _MenuData(Icons.receipt_long_outlined, 'Slip Gaji', () => context.go('/payroll')),
               _MenuData(Icons.settings_outlined, 'Pengaturan', () => context.go('/settings')),

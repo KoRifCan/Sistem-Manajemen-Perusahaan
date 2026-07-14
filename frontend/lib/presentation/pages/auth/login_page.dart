@@ -140,7 +140,11 @@ class _LoginPageState extends State<LoginPage> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Fitur reset password akan tersedia di update berikutnya')),
+                                );
+                              },
                               style: TextButton.styleFrom(foregroundColor: theme.colorScheme.primary),
                               child: const Text('Lupa password?'),
                             ),

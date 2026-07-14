@@ -128,7 +128,7 @@ class SettingsPage extends StatelessWidget {
             _SettingItem(
               icon: Icons.lock_outline,
               title: 'Ubah Password',
-              onTap: () {},
+              onTap: () => _showChangePasswordDialog(context),
             ),
           ]),
           const SizedBox(height: 16),
@@ -234,6 +234,64 @@ class SettingsPage extends StatelessWidget {
     );
   }
 }
+
+  void _showChangePasswordDialog(BuildContext context) {
+    final currentPassword = TextEditingController();
+    final newPassword = TextEditingController();
+    final confirmPassword = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Ubah Password'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: currentPassword,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Password Saat Ini'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: newPassword,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Password Baru'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: confirmPassword,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Konfirmasi Password Baru'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
+          ElevatedButton(
+            onPressed: () {
+              if (newPassword.text != confirmPassword.text) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Password baru tidak cocok')),
+                );
+                return;
+              }
+              if (newPassword.text.length < 6) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Password minimal 6 karakter')),
+                );
+                return;
+              }
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Fitur ubah password akan tersedia di update berikutnya')),
+              );
+            },
+            child: const Text('Simpan'),
+          ),
+        ],
+      ),
+    );
+  }
 
 class _SettingItem {
   final IconData icon;

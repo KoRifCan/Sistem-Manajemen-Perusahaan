@@ -229,8 +229,6 @@ class _EmployeeFormPageState extends State<EmployeeFormPage> {
                 items: AppConstants.employeeStatus.map((v) => DropdownMenuItem<String>(value: v, child: Text(v))).toList(),
                 onChanged: (v) => setState(() => _status = v),
               ),
-              const SizedBox(height: 24),
-              const SizedBox(width: double.infinity, child: ElevatedButton(onPressed: null, child: Text('Simpan'))),
               const SizedBox(height: 32),
             ],
           ),

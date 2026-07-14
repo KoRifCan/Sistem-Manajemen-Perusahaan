@@ -84,7 +84,7 @@ class _PayrollPageState extends State<PayrollPage> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () => _processPayroll(context),
                       icon: const Icon(Icons.calculate),
                       label: const Text('Proses Payroll'),
                     ),
@@ -141,7 +141,9 @@ class _PayrollPageState extends State<PayrollPage> {
                               ),
                               trailing: IconButton(
                                 icon: const Icon(Icons.picture_as_pdf),
-                                onPressed: () {},
+                                onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('PDF akan tersedia di update berikutnya')),
+                                ),
                               ),
                               isThreeLine: true,
                               onTap: () => context.go('/payroll/${payslip.id}'),
@@ -155,6 +157,12 @@ class _PayrollPageState extends State<PayrollPage> {
     );
   }
 
+  void _processPayroll(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Proses payroll akan tersedia di update berikutnya')),
+    );
+  }
+
   void _showCreatePeriodDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -163,7 +171,15 @@ class _PayrollPageState extends State<PayrollPage> {
         content: const Text('Periode akan dibuat untuk bulan berjalan.'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
-          ElevatedButton(onPressed: () { Navigator.pop(context); }, child: const Text('Buat')),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Periode baru akan tersedia di update berikutnya')),
+              );
+            },
+            child: const Text('Buat'),
+          ),
         ],
       ),
     );
