@@ -1,9 +1,9 @@
-import 'dart:html' as html;
+import 'dart:js_util' as js_util;
 
 void webReload() {
-  html.window.location.reload();
+  js_util.callMethod(js_util.globalThis, 'reloadPage', []);
 }
 
 void webInstallPwa() {
-  html.window.callMethod('installPwa', []);
+  js_util.callMethod(js_util.globalThis, 'installPwa', []);
 }
