@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/notification_provider.dart';
 import '../providers/settings_provider.dart';
+import 'company_logo.dart';
+import 'theme_toggle.dart';
 
 class MainScaffold extends StatelessWidget {
   final Widget child;
@@ -18,12 +20,12 @@ class MainScaffold extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth > 768;
-        return isWide ? _buildDesktop(context, auth, notif) : _buildMobile(context, auth, notif);
+        return isWide ? _buildDesktop(context, auth, notif, isDark) : _buildMobile(context, auth, notif, isDark);
       },
     );
   }
 
-  Widget _buildDesktop(BuildContext context, AuthProvider auth, NotificationProvider notif) {
+  Widget _buildDesktop(BuildContext context, AuthProvider auth, NotificationProvider notif, bool isDark) {
     return Scaffold(
       body: Row(
         children: [
@@ -32,12 +34,21 @@ class MainScaffold extends StatelessWidget {
             onDestinationSelected: (index) => _onNavigate(context, index),
             labelType: NavigationRailLabelType.all,
             leading: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: const CompanyLogo(size: 48, showText: false),
+            ),
+            trailing: Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.business, size: 32, color: Theme.of(context).colorScheme.primary),
-                  const SizedBox(height: 4),
-                  Text('SMP', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                  PremiumThemeToggle(size: 32),
+                  const SizedBox(height: 8),
+                  IconButton(
+                    icon: const Icon(Icons.logout),
+                    onPressed: () => auth.logout(),
+                    tooltip: 'Logout',
+                  ),
                 ],
               ),
             ),
@@ -46,28 +57,44 @@ class MainScaffold extends StatelessWidget {
               selectedIcon: Icon(item.activeIcon),
               label: Text(item.label, style: const TextStyle(fontSize: 11)),
             )).toList(),
-            trailing: Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: IconButton(
-                  icon: const Icon(Icons.logout),
-                  onPressed: () => auth.logout(),
-                  tooltip: 'Logout',
-                ),
-              ),
-            ),
           ),
           const VerticalDivider(width: 1),
-          Expanded(child: child),
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+              ),
+              child: child,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildMobile(BuildContext context, AuthProvider auth, NotificationProvider notif) {
+  Widget _buildMobile(BuildContext context, AuthProvider auth, NotificationProvider notif, bool isDark) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_getTitle(context)),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF1a73e8), Color(0xFF0d47a1)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(7),
+              ),
+              child: const Icon(Icons.business_center, size: 16, color: Colors.white),
+            ),
+            const SizedBox(width: 8),
+            Text(_getTitle(context)),
+          ],
+        ),
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),
@@ -75,6 +102,8 @@ class MainScaffold extends StatelessWidget {
           ),
         ),
         actions: [
+          PremiumThemeToggle(size: 36),
+          const SizedBox(width: 4),
           Stack(
             children: [
               IconButton(
@@ -83,14 +112,17 @@ class MainScaffold extends StatelessWidget {
               ),
               if (notif.unreadCount > 0)
                 Positioned(
-                  right: 8,
-                  top: 8,
+                  right: 6,
+                  top: 6,
                   child: Container(
                     padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(colors: [Colors.red, Colors.orange]),
+                      shape: BoxShape.circle,
+                    ),
                     child: Text(
                       '${notif.unreadCount}',
-                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                      style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -102,33 +134,96 @@ class MainScaffold extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
-              decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  CircleAvatar(
-                    radius: 28,
-                    backgroundColor: Colors.white,
-                    child: Text(
-                      auth.user?.name.isNotEmpty == true ? auth.user!.name[0].toUpperCase() : '?',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: isDark
+                      ? [const Color(0xFF0d47a1), const Color(0xFF1a1a2e)]
+                      : [const Color(0xFF1a73e8), const Color(0xFF0d47a1)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: CircleAvatar(
+                              backgroundColor: Colors.white,
+                              child: Text(
+                                auth.user?.name.isNotEmpty == true ? auth.user!.name[0].toUpperCase() : '?',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(auth.user?.name ?? 'Pengguna', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                                Text(auth.user?.email ?? '', style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
+                      const SizedBox(height: 16),
+                      const Row(
+                        children: [
+                          Icon(Icons.business_center, size: 16, color: Colors.white70),
+                          SizedBox(width: 6),
+                          Text('PT. Karya Inovasi Digital', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                        ],
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(auth.user?.name ?? 'Pengguna', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
-                  Text(auth.user?.email ?? '', style: const TextStyle(color: Colors.white70, fontSize: 12)),
-                ],
+                ),
               ),
             ),
+            const SizedBox(height: 8),
             ..._navItems.map((item) => ListTile(
-              leading: Icon(item.icon),
-              title: Text(item.label),
+              leading: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: _getSelectedIndex(context) == _navItems.indexOf(item)
+                      ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  item.icon,
+                  color: _getSelectedIndex(context) == _navItems.indexOf(item)
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                ),
+              ),
+              title: Text(
+                item.label,
+                style: TextStyle(
+                  fontWeight: _getSelectedIndex(context) == _navItems.indexOf(item) ? FontWeight.w600 : FontWeight.normal,
+                  color: _getSelectedIndex(context) == _navItems.indexOf(item)
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                ),
+              ),
               selected: _getSelectedIndex(context) == _navItems.indexOf(item),
               onTap: () {
                 Navigator.pop(context);
@@ -137,7 +232,15 @@ class MainScaffold extends StatelessWidget {
             )),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.settings),
+              leading: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.grey.withOpacity(0.1),
+                ),
+                child: const Icon(Icons.settings),
+              ),
               title: const Text('Pengaturan'),
               onTap: () {
                 Navigator.pop(context);
@@ -145,8 +248,16 @@ class MainScaffold extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Logout'),
+              leading: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.red.withOpacity(0.1),
+                ),
+                child: const Icon(Icons.logout, color: Colors.red),
+              ),
+              title: const Text('Logout', style: TextStyle(color: Colors.red)),
               onTap: () {
                 Navigator.pop(context);
                 auth.logout();
@@ -164,17 +275,24 @@ class MainScaffold extends StatelessWidget {
   Widget _buildBottomNav(BuildContext context) {
     final selected = _getSelectedIndex(context);
     final mobileItems = _navItems.where((item) => item.showBottomNav).toList();
-    return BottomNavigationBar(
-      currentIndex: mobileItems.indexOf(_navItems[selected]),
-      onTap: (index) {
-        final item = _navItems.where((i) => i.showBottomNav).toList()[index];
-        _onNavigate(context, _navItems.indexOf(item));
-      },
-      items: mobileItems.map((item) => BottomNavigationBarItem(
-        icon: Icon(item.icon),
-        activeIcon: Icon(item.activeIcon),
-        label: item.label,
-      )).toList(),
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: Theme.of(context).dividerTheme.color ?? Colors.grey.shade200, width: 0.5),
+        ),
+      ),
+      child: BottomNavigationBar(
+        currentIndex: mobileItems.indexOf(_navItems[selected]),
+        onTap: (index) {
+          final item = _navItems.where((i) => i.showBottomNav).toList()[index];
+          _onNavigate(context, _navItems.indexOf(item));
+        },
+        items: mobileItems.map((item) => BottomNavigationBarItem(
+          icon: Icon(item.icon),
+          activeIcon: Icon(item.activeIcon),
+          label: item.label,
+        )).toList(),
+      ),
     );
   }
 

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/settings_provider.dart';
+import '../../widgets/company_logo.dart';
+import '../../widgets/theme_toggle.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -38,7 +41,10 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
+    final isDark = context.watch<SettingsProvider>().isDark;
     final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -49,16 +55,33 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.business, size: 64, color: theme.colorScheme.primary),
-                  const SizedBox(height: 16),
-                  Text('Sistem Manajemen Perusahaan', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  Text('Masuk ke akun Anda', style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey)),
-                  const SizedBox(height: 40),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: PremiumThemeToggle(size: 40),
+                  ),
+                  const SizedBox(height: 20),
+                  const CompanyLogo(size: 72),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Masuk ke Akun Anda',
+                    style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Sistem Manajemen Perusahaan',
+                    style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey.shade500),
+                  ),
+                  const SizedBox(height: 36),
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.email_outlined)),
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      prefixIcon: Container(
+                        padding: const EdgeInsets.all(12),
+                        child: const Icon(Icons.email_outlined, size: 20),
+                      ),
+                    ),
                     validator: (v) => (v == null || v.isEmpty) ? 'Email wajib diisi' : null,
                   ),
                   const SizedBox(height: 16),
@@ -67,41 +90,81 @@ class _LoginPageState extends State<LoginPage> {
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
                       labelText: 'Password',
-                      prefixIcon: const Icon(Icons.lock_outlined),
+                      prefixIcon: Container(
+                        padding: const EdgeInsets.all(12),
+                        child: const Icon(Icons.lock_outlined, size: 20),
+                      ),
                       suffixIcon: IconButton(
-                        icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
+                        icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
                         onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                       ),
                     ),
                     validator: (v) => (v == null || v.isEmpty) ? 'Password wajib diisi' : null,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 4),
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () {},
+                      style: TextButton.styleFrom(foregroundColor: theme.colorScheme.primary),
                       child: const Text('Lupa password?'),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 8),
                   SizedBox(
                     width: double.infinity,
-                    height: 48,
+                    height: 50,
                     child: ElevatedButton(
                       onPressed: auth.isLoading ? null : _login,
                       child: auth.isLoading
-                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                          ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white))
                           : const Text('Masuk'),
                     ),
                   ),
                   if (auth.error != null) ...[
                     const SizedBox(height: 16),
-                    Text(auth.error!, style: const TextStyle(color: Colors.red, fontSize: 13)),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.red.withOpacity(0.2)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.error_outline, color: Colors.red, size: 20),
+                          const SizedBox(width: 8),
+                          Expanded(child: Text(auth.error!, style: const TextStyle(color: Colors.red, fontSize: 13))),
+                        ],
+                      ),
+                    ),
                   ],
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(child: Divider(color: Colors.grey.shade300)),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text('atau', style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
+                      ),
+                      Expanded(child: Divider(color: Colors.grey.shade300)),
+                    ],
+                  ),
                   const SizedBox(height: 24),
                   TextButton(
                     onPressed: () => context.go('/register'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: theme.colorScheme.primary,
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      side: BorderSide(color: theme.colorScheme.primary.withOpacity(0.3)),
+                    ),
                     child: const Text('Belum punya akun? Daftar'),
+                  ),
+                  const SizedBox(height: 32),
+                  Text(
+                    'PT. Karya Inovasi Digital',
+                    style: TextStyle(color: Colors.grey.shade400, fontSize: 11),
                   ),
                 ],
               ),
