@@ -1,12 +1,21 @@
-name: Deploy to Firebase
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,37 +26,29 @@ jobs:
         with:
           flutter-version: '3.22.x'
           channel: 'stable'
+          cache: true
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
 
       - name: Build Flutter Web
         working-directory: frontend
         run: |
           flutter pub get
-          flutter build web --release --base-href /
+          flutter build web --release --base-href=/Sistem-Manajemen-Perusahaan/
 
-      - name: Build Firebase Functions
-        working-directory: functions
-        run: |
-          npm install
-          npm run build
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/build/web
 
-      - name: Deploy to Firebase
-        run: |
-          firebase deploy --token "$FIREBASE_TOKEN" --non-interactive
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-
-      - name: Deploy Flutter Web to GitHub Pages
-        if: github.ref == 'refs/heads/main'
-        run: |
-          cp -r frontend/build/web public
-          git add public
-          git commit -m "Deploy to GitHub Pages" || true
-          git push origin main
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
