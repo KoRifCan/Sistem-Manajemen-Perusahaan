@@ -59,14 +59,13 @@ jobs:
 
       - name: Generate launcher icons
         run: |
-          python3 << 'PYEOF'
+          python3 -c "
 import os, struct, zlib
 
 def create_png(size, path):
     def chunk(ctype, data):
         c = ctype + data
         return struct.pack('>I', len(data)) + c + struct.pack('>I', zlib.crc32(c) & 0xffffffff)
-
     sig = b'\x89PNG\r\n\x1a\n'
     ihdr = chunk(b'IHDR', struct.pack('>IIBBBBB', size, size, 8, 2, 0, 0, 0))
     raw = b''
@@ -79,10 +78,10 @@ def create_png(size, path):
 
 sizes = {'mdpi': 48, 'hdpi': 72, 'xhdpi': 96, 'xxhdpi': 144, 'xxxhdpi': 192}
 for dpi, size in sizes.items():
-    d = f'android/app/src/main/res/mipmap-{dpi}'
+    d = 'android/app/src/main/res/mipmap-' + dpi
     os.makedirs(d, exist_ok=True)
-    create_png(size, f'{d}/ic_launcher.png')
-PYEOF
+    create_png(size, d + '/ic_launcher.png')
+"
       - name: Build APK
         run: flutter build apk --release
 
