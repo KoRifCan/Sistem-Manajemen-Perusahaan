@@ -1,3 +1,3 @@
--keep class com.example.sistem_manajemen_perusahaan.** { *; }
+-keep class com.korifcan.sistem_manajemen_perusahaan.** { *; }
 -keep class com.google.firebase.** { *; }
 -keep class io.flutter.** { *; }

@@ -24,7 +24,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "com.example.sistem_manajemen_perusahaan"
+    namespace "com.korifcan.sistem_manajemen_perusahaan"
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
@@ -43,7 +43,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.sistem_manajemen_perusahaan"
+        applicationId "com.korifcan.sistem_manajemen_perusahaan"
         minSdk flutter.minSdkVersion
         targetSdk flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
