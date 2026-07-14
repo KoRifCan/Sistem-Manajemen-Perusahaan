@@ -47,6 +47,42 @@ jobs:
           curl -sL "https://github.com/gradle/gradle/raw/v8.2.0/gradle/wrapper/gradle-wrapper.jar" -L -o android/gradle/wrapper/gradle-wrapper.jar
           chmod +x android/gradlew 2>/dev/null || true
 
+      - name: Decode google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -n "$GOOGLE_SERVICES_JSON" ]; then
+            echo "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+          else
+            echo "::warning::GOOGLE_SERVICES_JSON secret not set — Firebase features won't work"
+            cat > android/app/google-services.json << 'EOF'
+            {
+              "project_info": {
+                "project_number": "0",
+                "project_id": "placeholder",
+                "storage_bucket": "placeholder"
+              },
+              "client": [
+                {
+                  "client_info": {
+                    "mobilesdk_app_id": "1:0:android:placeholder",
+                    "android_client_info": {
+                      "package_name": "com.example.sistem_manajemen_perusahaan"
+                    }
+                  },
+                  "api_key": [],
+                  "services": {
+                    "appinvite_service": {
+                      "other_platform_oauth_client": []
+                    }
+                  }
+                }
+              ],
+              "configuration_version": "1"
+            }
+            EOF
+          fi
+
       - name: Build APK
         run: flutter build apk --release
 
