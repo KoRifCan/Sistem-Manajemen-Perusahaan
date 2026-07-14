@@ -54,9 +54,9 @@ class _RegisterPageState extends State<RegisterPage> {
     if (!_formKey.currentState!.validate()) return;
     final auth = context.read<AuthProvider>();
     final success = await auth.register(
-      _nameController.text.trim(),
       _emailController.text.trim(),
       _passwordController.text,
+      _nameController.text.trim(),
     );
     if (success && mounted) {
       context.go('/dashboard');
