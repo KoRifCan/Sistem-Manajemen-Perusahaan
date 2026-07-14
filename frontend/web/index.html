@@ -102,12 +102,20 @@
     window.installPwa = function() {
       if (_installPrompt) {
         _installPrompt.prompt();
-        _installPrompt.userChoice.then(function() { _installPrompt = null; });
+        _installPrompt.userChoice.then(function(result) {
+          _installPrompt = null;
+        });
         return true;
       }
       return false;
     };
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/Sistem-Manajemen-Perusahaan/flutter_service_worker.js', { scope: '/Sistem-Manajemen-Perusahaan/' }).catch(function() {});
+    }
     window.reloadPage = function() { location.reload(); };
+    window.isStandalone = function() {
+      return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    };
     (function() {
       var redirect = sessionStorage.redirect;
       delete sessionStorage.redirect;

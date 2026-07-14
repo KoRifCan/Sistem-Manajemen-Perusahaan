@@ -4,6 +4,15 @@ void webReload() {
   js_util.callMethod(js_util.globalThis, 'reloadPage', []);
 }
 
+bool webIsStandalone() {
+  try {
+    final result = js_util.callMethod(js_util.globalThis, 'isStandalone', []);
+    return result == true;
+  } catch (_) {
+    return false;
+  }
+}
+
 bool webInstallPwa() {
   try {
     final fn = js_util.getProperty(js_util.globalThis, 'installPwa');

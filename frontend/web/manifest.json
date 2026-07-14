@@ -2,7 +2,7 @@
   "name": "PT. KoRifCan - Sistem Manajemen Perusahaan",
   "short_name": "SMP",
   "description": "HRIS & ERP terpadu: Payroll, Absensi, Cuti, Approval, Aset, Performance, Helpdesk & Laporan Bisnis",
-  "start_url": ".",
+  "start_url": "/Sistem-Manajemen-Perusahaan/",
   "display": "standalone",
   "background_color": "#f8f9fa",
   "theme_color": "#1a73e8",

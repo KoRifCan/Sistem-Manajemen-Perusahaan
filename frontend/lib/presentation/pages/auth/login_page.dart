@@ -29,10 +29,18 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _handleInstall() {
+    if (webIsStandalone()) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Aplikasi sudah terinstal')),
+        );
+      }
+      return;
+    }
     final installed = webInstallPwa();
     if (!installed && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Buka menu browser → Install / Tambahkan ke Layar Utama')),
+        const SnackBar(content: Text('Buka menu browser ⋮ → Install / Tambahkan ke Layar Utama')),
       );
     }
   }
