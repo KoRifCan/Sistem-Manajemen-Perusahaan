@@ -1,3 +1,4 @@
+import '../utils/firestore_helpers.dart';
 class AttendanceModel {
   final String id;
   final String employeeId;
@@ -45,9 +46,9 @@ class AttendanceModel {
     return AttendanceModel(
       id: id,
       employeeId: map['employeeId'] ?? '',
-      date: (map['date'] as DateTime?) ?? DateTime.now(),
-      checkIn: map['checkIn'] as DateTime?,
-      checkOut: map['checkOut'] as DateTime?,
+      date: toDateTime(map['date']) ?? DateTime.now(),
+      checkIn: toDateTime(map['checkIn']),
+      checkOut: toDateTime(map['checkOut']),
       checkInPhoto: map['checkInPhoto'],
       checkOutPhoto: map['checkOutPhoto'],
       checkInLat: (map['checkInLat'] as num?)?.toDouble(),

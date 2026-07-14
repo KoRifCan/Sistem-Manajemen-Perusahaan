@@ -1,3 +1,4 @@
+import '../utils/firestore_helpers.dart';
 class LeaveModel {
   final String id;
   final String employeeId;
@@ -36,17 +37,17 @@ class LeaveModel {
       id: id,
       employeeId: map['employeeId'] ?? '',
       type: map['type'] ?? '',
-      startDate: (map['startDate'] as DateTime?) ?? DateTime.now(),
-      endDate: (map['endDate'] as DateTime?) ?? DateTime.now(),
+      startDate: toDateTime(map['startDate']) ?? DateTime.now(),
+      endDate: toDateTime(map['endDate']) ?? DateTime.now(),
       totalDays: map['totalDays'] ?? 0,
       reason: map['reason'] ?? '',
       attachmentUrl: map['attachmentUrl'],
       status: map['status'] ?? 'pending',
       approvedBy: map['approvedBy'],
-      approvedAt: map['approvedAt'] as DateTime?,
+      approvedAt: toDateTime(map['approvedAt']),
       rejectReason: map['rejectReason'],
       contactDuringLeave: map['contactDuringLeave'],
-      createdAt: (map['createdAt'] as DateTime?) ?? DateTime.now(),
+      createdAt: toDateTime(map['createdAt']) ?? DateTime.now(),
     );
   }
 

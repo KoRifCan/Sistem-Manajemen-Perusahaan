@@ -1,3 +1,4 @@
+import '../utils/firestore_helpers.dart';
 class ApprovalRequestModel {
   final String id;
   final String type; // leave, overtime, permit, reimbursement, purchase, mutation, resignation
@@ -47,8 +48,8 @@ class ApprovalRequestModel {
       steps: (map['steps'] as List<dynamic>?)
               ?.map((s) => ApprovalStepModel.fromMap(s as Map<String, dynamic>))
               .toList() ?? [],
-      createdAt: (map['createdAt'] as DateTime?) ?? DateTime.now(),
-      updatedAt: (map['updatedAt'] as DateTime?) ?? DateTime.now(),
+      createdAt: toDateTime(map['createdAt']) ?? DateTime.now(),
+      updatedAt: toDateTime(map['updatedAt']) ?? DateTime.now(),
     );
   }
 
@@ -92,7 +93,7 @@ class ApprovalStepModel {
       approverName: map['approverName'] ?? '',
       level: map['level'] ?? 1,
       status: map['status'] ?? 'pending',
-      actionAt: map['actionAt'] as DateTime?,
+      actionAt: toDateTime(map['actionAt']),
       note: map['note'],
     );
   }

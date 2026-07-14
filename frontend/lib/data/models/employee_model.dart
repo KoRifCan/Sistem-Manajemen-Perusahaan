@@ -1,3 +1,4 @@
+import '../utils/firestore_helpers.dart';
 class EmployeeModel {
   final String id;
   final String nip;
@@ -75,7 +76,7 @@ class EmployeeModel {
       photoUrl: map['photoUrl'],
       nik: map['nik'],
       placeOfBirth: map['placeOfBirth'],
-      dateOfBirth: (map['dateOfBirth'] as DateTime?),
+      dateOfBirth: toDateTime(map['dateOfBirth']),
       gender: map['gender'],
       religion: map['religion'],
       bloodType: map['bloodType'],
@@ -86,8 +87,8 @@ class EmployeeModel {
       positionId: map['positionId'],
       levelId: map['levelId'],
       status: map['status'],
-      joinDate: (map['joinDate'] as DateTime?) ?? DateTime.now(),
-      contractEndDate: map['contractEndDate'] as DateTime?,
+      joinDate: toDateTime(map['joinDate']) ?? DateTime.now(),
+      contractEndDate: toDateTime(map['contractEndDate']),
       shift: map['shift'],
       location: map['location'],
       superiorId: map['superiorId'],
@@ -96,8 +97,8 @@ class EmployeeModel {
       bankName: map['bankName'],
       bankAccount: map['bankAccount'],
       isActive: map['isActive'] ?? true,
-      createdAt: (map['createdAt'] as DateTime?) ?? DateTime.now(),
-      updatedAt: (map['updatedAt'] as DateTime?) ?? DateTime.now(),
+      createdAt: toDateTime(map['createdAt']) ?? DateTime.now(),
+      updatedAt: toDateTime(map['updatedAt']) ?? DateTime.now(),
     );
   }
 

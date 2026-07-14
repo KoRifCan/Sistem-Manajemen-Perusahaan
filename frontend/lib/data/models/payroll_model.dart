@@ -1,3 +1,4 @@
+import '../utils/firestore_helpers.dart';
 class PayrollPeriodModel {
   final String id;
   final String month;
@@ -32,15 +33,15 @@ class PayrollPeriodModel {
       id: id,
       month: map['month'] ?? '',
       year: map['year'] ?? DateTime.now().year,
-      startDate: (map['startDate'] as DateTime?) ?? DateTime.now(),
-      endDate: (map['endDate'] as DateTime?) ?? DateTime.now(),
-      paymentDate: map['paymentDate'] as DateTime?,
+      startDate: toDateTime(map['startDate']) ?? DateTime.now(),
+      endDate: toDateTime(map['endDate']) ?? DateTime.now(),
+      paymentDate: toDateTime(map['paymentDate']),
       status: map['status'] ?? 'draft',
       employeeCount: map['employeeCount'] ?? 0,
       totalSalary: (map['totalSalary'] as num?)?.toDouble() ?? 0,
       totalDeductions: (map['totalDeductions'] as num?)?.toDouble() ?? 0,
       totalNetSalary: (map['totalNetSalary'] as num?)?.toDouble() ?? 0,
-      createdAt: (map['createdAt'] as DateTime?) ?? DateTime.now(),
+      createdAt: toDateTime(map['createdAt']) ?? DateTime.now(),
     );
   }
 
@@ -114,9 +115,9 @@ class PayslipModel {
       loanDeduction: (map['loanDeduction'] as num?)?.toDouble() ?? 0,
       netSalary: (map['netSalary'] as num?)?.toDouble() ?? 0,
       status: map['status'] ?? 'draft',
-      paidAt: map['paidAt'] as DateTime?,
+      paidAt: toDateTime(map['paidAt']),
       paymentMethod: map['paymentMethod'],
-      createdAt: (map['createdAt'] as DateTime?) ?? DateTime.now(),
+      createdAt: toDateTime(map['createdAt']) ?? DateTime.now(),
     );
   }
 

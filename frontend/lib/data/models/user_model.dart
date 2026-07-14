@@ -1,3 +1,4 @@
+import '../utils/firestore_helpers.dart';
 class UserModel {
   final String uid;
   final String email;
@@ -34,7 +35,7 @@ class UserModel {
       positionId: map['positionId'],
       isActive: map['isActive'] ?? true,
       photoUrl: map['photoUrl'],
-      createdAt: (map['createdAt'] as DateTime?) ?? DateTime.now(),
+      createdAt: toDateTime(map['createdAt']) ?? DateTime.now(),
     );
   }
 
