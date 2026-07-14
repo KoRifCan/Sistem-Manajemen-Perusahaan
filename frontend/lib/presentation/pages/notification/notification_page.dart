@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../../core/utils/helpers.dart';
+import '../../../core/theme/app_theme.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
@@ -34,7 +35,7 @@ class _NotificationPageState extends State<NotificationPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('${provider.unreadCount} belum dibaca', style: TextStyle(color: Colors.grey.shade600)),
+                Text('${provider.unreadCount} belum dibaca', style: TextStyle(color: AppTheme.textSecondary(context))),
                 TextButton(
                   onPressed: () {
                     final user = context.read<AuthProvider>().user;
@@ -51,9 +52,9 @@ class _NotificationPageState extends State<NotificationPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.notifications_none, size: 64, color: Colors.grey.shade400),
+                        Icon(Icons.notifications_none, size: 64, color: AppTheme.textHint(context)),
                         const SizedBox(height: 16),
-                        Text('Tidak ada notifikasi', style: TextStyle(color: Colors.grey.shade600)),
+                        Text('Tidak ada notifikasi', style: TextStyle(color: AppTheme.textSecondary(context))),
                       ],
                     ),
                   )
@@ -68,12 +69,12 @@ class _NotificationPageState extends State<NotificationPage> {
                           leading: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: notif.isRead ? Colors.grey.withOpacity(0.1) : theme.colorScheme.primary.withOpacity(0.1),
+                              color: notif.isRead ? AppTheme.textSecondary(context).withOpacity(0.1) : theme.colorScheme.primary.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(
                               _getNotifIcon(notif.type),
-                              color: notif.isRead ? Colors.grey : theme.colorScheme.primary,
+                              color: notif.isRead ? AppTheme.textSecondary(context) : theme.colorScheme.primary,
                               size: 20,
                             ),
                           ),
@@ -83,13 +84,13 @@ class _NotificationPageState extends State<NotificationPage> {
                             children: [
                               Text(notif.body, maxLines: 2, overflow: TextOverflow.ellipsis),
                               const SizedBox(height: 4),
-                              Text(Helpers.formatDateTime(notif.createdAt), style: TextStyle(color: Colors.grey.shade500, fontSize: 11)),
+                              Text(Helpers.formatDateTime(notif.createdAt), style: TextStyle(color: AppTheme.textHint(context), fontSize: 11)),
                             ],
                           ),
                           trailing: notif.isRead ? null : Container(
                             width: 10,
                             height: 10,
-                            decoration: const BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
+                            decoration: BoxDecoration(color: AppTheme.statusDefault(context), shape: BoxShape.circle),
                           ),
                           onTap: () => provider.markAsRead(notif.id),
                         ),

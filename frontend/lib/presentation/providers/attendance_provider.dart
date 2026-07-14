@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../data/models/attendance_model.dart';
 import '../../data/repositories/attendance_repository.dart';
@@ -11,6 +12,8 @@ class AttendanceProvider extends ChangeNotifier {
   bool _isCheckedIn = false;
   String? _currentAttendanceId;
   String? _error;
+  StreamSubscription? _todaySub;
+  StreamSubscription? _employeeAttendanceSub;
 
   List<AttendanceModel> get todayAttendance => _todayAttendance;
   List<AttendanceModel> get employeeAttendance => _employeeAttendance;
@@ -20,15 +23,23 @@ class AttendanceProvider extends ChangeNotifier {
   String? get error => _error;
 
   void loadTodayAttendance() {
-    _repository.getTodayAttendance().listen((data) {
+    _todaySub?.cancel();
+    _todaySub = _repository.getTodayAttendance().listen((data) {
       _todayAttendance = data;
+      notifyListeners();
+    }, onError: (e) {
+      _error = e.toString();
       notifyListeners();
     });
   }
 
   void loadEmployeeAttendance(String employeeId) {
-    _repository.getEmployeeAttendance(employeeId).listen((data) {
+    _employeeAttendanceSub?.cancel();
+    _employeeAttendanceSub = _repository.getEmployeeAttendance(employeeId).listen((data) {
       _employeeAttendance = data;
+      notifyListeners();
+    }, onError: (e) {
+      _error = e.toString();
       notifyListeners();
     });
   }
@@ -87,5 +98,12 @@ class AttendanceProvider extends ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  @override
+  void dispose() {
+    _todaySub?.cancel();
+    _employeeAttendanceSub?.cancel();
+    super.dispose();
   }
 }

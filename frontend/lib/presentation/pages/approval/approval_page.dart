@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/approval_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../../data/models/approval_model.dart';
 import '../../../core/utils/helpers.dart';
+import '../../../core/theme/app_theme.dart';
 
 class ApprovalPage extends StatefulWidget {
   const ApprovalPage({super.key});
@@ -62,15 +64,15 @@ class _ApprovalPageState extends State<ApprovalPage> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildList(BuildContext context, List list, ThemeData theme, {bool isPending = false}) {
+  Widget _buildList(BuildContext context, List<ApprovalRequestModel> list, ThemeData theme, {bool isPending = false}) {
     if (list.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.checklist, size: 64, color: Colors.grey.shade400),
+            Icon(Icons.checklist, size: 64, color: AppTheme.textHint(context)),
             const SizedBox(height: 16),
-            Text('Tidak ada data', style: TextStyle(color: Colors.grey.shade600)),
+            Text('Tidak ada data', style: TextStyle(color: AppTheme.textSecondary(context))),
           ],
         ),
       );
@@ -98,15 +100,15 @@ class _ApprovalPageState extends State<ApprovalPage> with SingleTickerProviderSt
                       child: Text(item.type.toUpperCase(), style: TextStyle(color: theme.colorScheme.primary, fontSize: 11, fontWeight: FontWeight.bold)),
                     ),
                     const Spacer(),
-                    Text(item.createdAt != null ? Helpers.formatDate(item.createdAt) : '-', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+                    Text(Helpers.formatDate(item.createdAt), style: TextStyle(color: AppTheme.textHint(context), fontSize: 12)),
                   ],
                 ),
                 const SizedBox(height: 8),
                 Text(item.title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
                 const SizedBox(height: 4),
-                Text(item.description, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey.shade600)),
+                Text(item.description, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: AppTheme.textSecondary(context))),
                 const SizedBox(height: 4),
-                Text('Diajukan oleh: ${item.requesterName}', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+                Text('Diajukan oleh: ${item.requesterName}', style: TextStyle(color: AppTheme.textHint(context), fontSize: 12)),
                 if (isPending) ...[
                   const Divider(height: 24),
                   Row(
@@ -114,9 +116,9 @@ class _ApprovalPageState extends State<ApprovalPage> with SingleTickerProviderSt
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () => _showRejectDialog(context, item.id),
-                          icon: const Icon(Icons.close, color: Colors.red),
-                          label: const Text('Tolak', style: TextStyle(color: Colors.red)),
-                          style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.red)),
+                          icon: Icon(Icons.close, color: AppTheme.statusRejected(context)),
+                          label: Text('Tolak', style: TextStyle(color: AppTheme.statusRejected(context))),
+                          style: OutlinedButton.styleFrom(side: BorderSide(color: AppTheme.statusRejected(context))),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -159,7 +161,10 @@ class _ApprovalPageState extends State<ApprovalPage> with SingleTickerProviderSt
           ElevatedButton(
             onPressed: () {
               if (controller.text.isNotEmpty) {
-                context.read<ApprovalProvider>().reject(id, context.read<AuthProvider>().user?.uid ?? '', controller.text);
+                final uid = context.read<AuthProvider>().user?.uid;
+                if (uid != null) {
+                  context.read<ApprovalProvider>().reject(id, uid, controller.text);
+                }
                 Navigator.pop(context);
               }
             },

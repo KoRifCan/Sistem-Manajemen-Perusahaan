@@ -40,12 +40,13 @@ class AuthRepository {
     return user;
   }
 
-  Future<UserModel?> getCurrentUserData() async {
+  Stream<UserModel?> getCurrentUserData() {
     final user = currentUser;
-    if (user == null) return null;
-    final doc = await FirebaseService.users.doc(user.uid).get();
-    if (!doc.exists) return null;
-    return UserModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+    if (user == null) return Stream.value(null);
+    return FirebaseService.users.doc(user.uid).snapshots().map((doc) {
+      if (!doc.exists) return null;
+      return UserModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+    });
   }
 
   Future<void> logout() async {

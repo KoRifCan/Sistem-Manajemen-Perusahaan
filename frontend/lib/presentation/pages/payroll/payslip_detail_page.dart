@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/payroll_provider.dart';
 import '../../../core/utils/helpers.dart';
+import '../../../core/theme/app_theme.dart';
 
 class PayslipDetailPage extends StatelessWidget {
   final String id;
@@ -42,7 +43,7 @@ class PayslipDetailPage extends StatelessWidget {
                   children: [
                     Text('SLIP GAJI', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
-                    Text(Helpers.formatMonthYear(DateTime.now()), style: TextStyle(color: Colors.grey.shade600)),
+                    Text(Helpers.formatMonthYear(payslip.createdAt), style: TextStyle(color: AppTheme.textSecondary(context))),
                     const Divider(height: 24),
                     _buildDetailRow('Gaji Pokok', Helpers.formatCurrency(payslip.baseSalary)),
                     _buildDetailRow('Lembur', Helpers.formatCurrency(payslip.overtimePay)),
@@ -50,13 +51,13 @@ class PayslipDetailPage extends StatelessWidget {
                     const Divider(),
                     _buildDetailRow('Gaji Kotor', Helpers.formatCurrency(payslip.grossSalary), bold: true),
                     const Divider(),
-                    _buildDetailRow('Potongan PPh 21', '-${Helpers.formatCurrency(payslip.pph21)}', color: Colors.red),
-                    _buildDetailRow('BPJS Kesehatan', '-${Helpers.formatCurrency(payslip.bpjsKesehatan)}', color: Colors.red),
-                    _buildDetailRow('BPJS Ketenagakerjaan', '-${Helpers.formatCurrency(payslip.bpjsKetenagakerjaan)}', color: Colors.red),
+                    _buildDetailRow('Potongan PPh 21', '-${Helpers.formatCurrency(payslip.pph21)}', color: AppTheme.statusRejected(context)),
+                    _buildDetailRow('BPJS Kesehatan', '-${Helpers.formatCurrency(payslip.bpjsKesehatan)}', color: AppTheme.statusRejected(context)),
+                    _buildDetailRow('BPJS Ketenagakerjaan', '-${Helpers.formatCurrency(payslip.bpjsKetenagakerjaan)}', color: AppTheme.statusRejected(context)),
                     if (payslip.loanDeduction > 0)
                       _buildDetailRow('Pinjaman', '-${Helpers.formatCurrency(payslip.loanDeduction)}', color: Colors.red),
                     const Divider(thickness: 2),
-                    _buildDetailRow('TOTAL DITERIMA', Helpers.formatCurrency(payslip.netSalary), bold: true, color: Colors.green, fontSize: 18),
+                    _buildDetailRow('TOTAL DITERIMA', Helpers.formatCurrency(payslip.netSalary), bold: true, color: AppTheme.statusApproved(context), fontSize: 18),
                   ],
                 ),
               ),
@@ -72,17 +73,17 @@ class PayslipDetailPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Status:', style: TextStyle(color: Colors.grey.shade600)),
+                        Text('Status:', style: TextStyle(color: AppTheme.textSecondary(context))),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: payslip.status == 'paid' ? Colors.green.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
+                            color: payslip.status == 'paid' ? AppTheme.statusApproved(context).withOpacity(0.1) : AppTheme.statusPending(context).withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             payslip.status.toUpperCase(),
                             style: TextStyle(
-                              color: payslip.status == 'paid' ? Colors.green : Colors.orange,
+                              color: payslip.status == 'paid' ? AppTheme.statusApproved(context) : AppTheme.statusPending(context),
                               fontWeight: FontWeight.bold,
                               fontSize: 12,
                             ),
@@ -95,7 +96,7 @@ class PayslipDetailPage extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Tanggal Bayar:', style: TextStyle(color: Colors.grey.shade600)),
+                          Text('Tanggal Bayar:', style: TextStyle(color: AppTheme.textSecondary(context))),
                           Text(Helpers.formatDate(payslip.paidAt!)),
                         ],
                       ),

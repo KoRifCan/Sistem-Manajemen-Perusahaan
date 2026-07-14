@@ -17,6 +17,27 @@ class AppTheme {
   static const Color cardDark = Color(0xFF16213e);
   static const Color navDark = Color(0xFF0d1117);
 
+  static Color surfaceColor(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark ? cardDark : Colors.white;
+
+  static Color textSecondary(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600;
+
+  static Color textHint(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade500 : Colors.grey.shade400;
+
+  static Color statusPending(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark ? Colors.orange.shade300 : accentOrange;
+
+  static Color statusApproved(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark ? Colors.green.shade300 : accentGreen;
+
+  static Color statusRejected(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark ? Colors.red.shade300 : accentRed;
+
+  static Color statusDefault(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark ? Colors.blue.shade300 : Colors.blue;
+
   static const List<Color> cardColors = [
     primaryBlue,
     accentGreen,

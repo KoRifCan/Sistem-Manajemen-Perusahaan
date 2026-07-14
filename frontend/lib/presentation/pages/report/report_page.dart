@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../../core/theme/app_theme.dart';
 
 class ReportPage extends StatelessWidget {
   const ReportPage({super.key});
@@ -18,12 +19,12 @@ class ReportPage extends StatelessWidget {
           children: [
             Text('Laporan', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
             const SizedBox(height: 16),
-            _buildReportCard(context, Icons.people, 'Laporan Karyawan', 'Data karyawan per departemen', Colors.blue),
-            _buildReportCard(context, Icons.fingerprint, 'Laporan Absensi', 'Rekap kehadiran per periode', Colors.green),
-            _buildReportCard(context, Icons.beach_access, 'Laporan Cuti', 'Riwayat cuti karyawan', Colors.orange),
-            _buildReportCard(context, Icons.monetization_on, 'Laporan Payroll', 'Summary gaji & PPh 21', Colors.red),
-            _buildReportCard(context, Icons.inventory_2, 'Laporan Aset', 'Daftar aset & peminjaman', Colors.purple),
-            _buildReportCard(context, Icons.assessment, 'Laporan BPJS', 'Iuran BPJS Kesehatan & TK', Colors.teal),
+            _buildReportCard(context, Icons.people, 'Laporan Karyawan', 'Data karyawan per departemen', AppTheme.cardColors[0]),
+            _buildReportCard(context, Icons.fingerprint, 'Laporan Absensi', 'Rekap kehadiran per periode', AppTheme.cardColors[1]),
+            _buildReportCard(context, Icons.beach_access, 'Laporan Cuti', 'Riwayat cuti karyawan', AppTheme.cardColors[2]),
+            _buildReportCard(context, Icons.monetization_on, 'Laporan Payroll', 'Summary gaji & PPh 21', AppTheme.cardColors[3]),
+            _buildReportCard(context, Icons.inventory_2, 'Laporan Aset', 'Daftar aset & peminjaman', AppTheme.cardColors[4]),
+            _buildReportCard(context, Icons.assessment, 'Laporan BPJS', 'Iuran BPJS Kesehatan & TK', AppTheme.cardColors[5]),
             if (isHR) ...[
               const SizedBox(height: 16),
               Text('Export', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),

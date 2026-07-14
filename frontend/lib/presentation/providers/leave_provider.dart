@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../data/models/leave_model.dart';
 import '../../data/repositories/leave_repository.dart';
@@ -8,6 +9,8 @@ class LeaveProvider extends ChangeNotifier {
   List<LeaveModel> _pendingApprovals = [];
   bool _isLoading = false;
   String? _error;
+  StreamSubscription? _leaveSub;
+  StreamSubscription? _pendingSub;
 
   List<LeaveModel> get leaves => _leaves;
   List<LeaveModel> get pendingApprovals => _pendingApprovals;
@@ -15,18 +18,27 @@ class LeaveProvider extends ChangeNotifier {
   String? get error => _error;
 
   void loadEmployeeLeaves(String employeeId) {
+    _leaveSub?.cancel();
     _isLoading = true;
     notifyListeners();
-    _repository.getEmployeeLeaves(employeeId).listen((data) {
+    _leaveSub = _repository.getEmployeeLeaves(employeeId).listen((data) {
       _leaves = data;
       _isLoading = false;
+      notifyListeners();
+    }, onError: (e) {
+      _isLoading = false;
+      _error = e.toString();
       notifyListeners();
     });
   }
 
   void loadPendingApprovals(String approverId) {
-    _repository.getPendingLeaves(approverId).listen((data) {
+    _pendingSub?.cancel();
+    _pendingSub = _repository.getPendingLeaves(approverId).listen((data) {
       _pendingApprovals = data;
+      notifyListeners();
+    }, onError: (e) {
+      _error = e.toString();
       notifyListeners();
     });
   }
@@ -78,5 +90,12 @@ class LeaveProvider extends ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  @override
+  void dispose() {
+    _leaveSub?.cancel();
+    _pendingSub?.cancel();
+    super.dispose();
   }
 }

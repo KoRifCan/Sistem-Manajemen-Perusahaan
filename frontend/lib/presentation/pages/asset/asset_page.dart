@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/asset_provider.dart';
+import '../../../core/theme/app_theme.dart';
 
 class AssetPage extends StatefulWidget {
   const AssetPage({super.key});
@@ -70,9 +71,9 @@ class _AssetPageState extends State<AssetPage> with SingleTickerProviderStateMix
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey.shade400),
+            Icon(Icons.inventory_2_outlined, size: 64, color: AppTheme.textHint(context)),
             const SizedBox(height: 16),
-            Text('Belum ada aset', style: TextStyle(color: Colors.grey.shade600)),
+            Text('Belum ada aset', style: TextStyle(color: AppTheme.textSecondary(context))),
           ],
         ),
       );
@@ -90,12 +91,12 @@ class _AssetPageState extends State<AssetPage> with SingleTickerProviderStateMix
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: isAvailable ? Colors.green.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
+                color: isAvailable ? AppTheme.statusApproved(context).withOpacity(0.1) : AppTheme.statusPending(context).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
                 isAvailable ? Icons.check_circle : Icons.person,
-                color: isAvailable ? Colors.green : Colors.orange,
+                color: isAvailable ? AppTheme.statusApproved(context) : AppTheme.statusPending(context),
               ),
             ),
             title: Text(asset['name'] ?? '-', style: const TextStyle(fontWeight: FontWeight.w600)),
@@ -103,10 +104,10 @@ class _AssetPageState extends State<AssetPage> with SingleTickerProviderStateMix
             trailing: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: status == 'Tersedia' ? Colors.green.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
+                color: status == 'Tersedia' ? AppTheme.statusApproved(context).withOpacity(0.1) : AppTheme.statusPending(context).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Text(status, style: TextStyle(color: status == 'Tersedia' ? Colors.green : Colors.orange, fontSize: 11, fontWeight: FontWeight.bold)),
+              child: Text(status, style: TextStyle(color: status == 'Tersedia' ? AppTheme.statusApproved(context) : AppTheme.statusPending(context), fontSize: 11, fontWeight: FontWeight.bold)),
             ),
           ),
         );
@@ -117,7 +118,7 @@ class _AssetPageState extends State<AssetPage> with SingleTickerProviderStateMix
   Widget _buildLoanList(AssetProvider provider, ThemeData theme) {
     final loans = provider.loans.where((l) => l['status'] == 'Dipinjam').toList();
     if (loans.isEmpty) {
-      return Center(child: Text('Tidak ada peminjaman aktif', style: TextStyle(color: Colors.grey.shade600)));
+      return Center(child: Text('Tidak ada peminjaman aktif', style: TextStyle(color: AppTheme.textSecondary(context))));
     }
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -145,7 +146,7 @@ class _AssetPageState extends State<AssetPage> with SingleTickerProviderStateMix
   Widget _buildCategoryList(AssetProvider provider, ThemeData theme) {
     final categories = provider.categories;
     if (categories.isEmpty) {
-      return Center(child: Text('Belum ada kategori', style: TextStyle(color: Colors.grey.shade600)));
+      return Center(child: Text('Belum ada kategori', style: TextStyle(color: AppTheme.textSecondary(context))));
     }
     return ListView.builder(
       padding: const EdgeInsets.all(16),

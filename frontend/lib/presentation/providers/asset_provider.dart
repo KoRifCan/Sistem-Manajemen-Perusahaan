@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../data/datasources/firebase_service.dart';
@@ -8,6 +9,9 @@ class AssetProvider extends ChangeNotifier {
   List<Map<String, dynamic>> _loans = [];
   bool _isLoading = false;
   String? _error;
+  StreamSubscription? _assetSub;
+  StreamSubscription? _categorySub;
+  StreamSubscription? _loanSub;
 
   List<Map<String, dynamic>> get assets => _assets;
   List<Map<String, dynamic>> get categories => _categories;
@@ -16,22 +20,34 @@ class AssetProvider extends ChangeNotifier {
   String? get error => _error;
 
   void loadAssets() {
-    FirebaseService.assets.orderBy('name').snapshots().listen((snapshot) {
+    _assetSub?.cancel();
+    _assetSub = FirebaseService.assets.orderBy('name').snapshots().listen((snapshot) {
       _assets = snapshot.docs.map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>}).toList();
+      notifyListeners();
+    }, onError: (e) {
+      _error = e.toString();
       notifyListeners();
     });
   }
 
   void loadCategories() {
-    FirebaseService.assetCategories.orderBy('name').snapshots().listen((snapshot) {
+    _categorySub?.cancel();
+    _categorySub = FirebaseService.assetCategories.orderBy('name').snapshots().listen((snapshot) {
       _categories = snapshot.docs.map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>}).toList();
+      notifyListeners();
+    }, onError: (e) {
+      _error = e.toString();
       notifyListeners();
     });
   }
 
   void loadLoans() {
-    FirebaseService.assetLoans.orderBy('createdAt', descending: true).snapshots().listen((snapshot) {
+    _loanSub?.cancel();
+    _loanSub = FirebaseService.assetLoans.orderBy('createdAt', descending: true).snapshots().listen((snapshot) {
       _loans = snapshot.docs.map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>}).toList();
+      notifyListeners();
+    }, onError: (e) {
+      _error = e.toString();
       notifyListeners();
     });
   }
@@ -46,23 +62,50 @@ class AssetProvider extends ChangeNotifier {
     await FirebaseService.assets.doc(id).update(data);
   }
 
-  Future<void> borrowAsset(String assetId, String employeeId, String employeeName) async {
-    await FirebaseService.assetLoans.add({
-      'assetId': assetId,
-      'employeeId': employeeId,
-      'employeeName': employeeName,
-      'borrowDate': DateTime.now(),
-      'status': 'Dipinjam',
-      'createdAt': DateTime.now(),
-    });
-    await FirebaseService.assets.doc(assetId).update({'status': 'Dipinjam'});
+  Future<bool> borrowAsset(String assetId, String employeeId, String employeeName) async {
+    try {
+      final batch = FirebaseService.firestore.batch();
+      final loanRef = FirebaseService.assetLoans.doc();
+      batch.set(loanRef, {
+        'assetId': assetId,
+        'employeeId': employeeId,
+        'employeeName': employeeName,
+        'borrowDate': DateTime.now(),
+        'status': 'Dipinjam',
+        'createdAt': DateTime.now(),
+      });
+      batch.update(FirebaseService.assets.doc(assetId), {'status': 'Dipinjam'});
+      await batch.commit();
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      return false;
+    }
   }
 
-  Future<void> returnAsset(String loanId, String assetId) async {
-    await FirebaseService.assetLoans.doc(loanId).update({
-      'returnDate': DateTime.now(),
-      'status': 'Dikembalikan',
-    });
-    await FirebaseService.assets.doc(assetId).update({'status': 'Tersedia'});
+  Future<bool> returnAsset(String loanId, String assetId) async {
+    try {
+      final batch = FirebaseService.firestore.batch();
+      batch.update(FirebaseService.assetLoans.doc(loanId), {
+        'returnDate': DateTime.now(),
+        'status': 'Dikembalikan',
+      });
+      batch.update(FirebaseService.assets.doc(assetId), {'status': 'Tersedia'});
+      await batch.commit();
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
+  @override
+  void dispose() {
+    _assetSub?.cancel();
+    _categorySub?.cancel();
+    _loanSub?.cancel();
+    super.dispose();
   }
 }

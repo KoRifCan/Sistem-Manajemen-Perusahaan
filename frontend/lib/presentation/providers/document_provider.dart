@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,19 +7,24 @@ import '../../data/datasources/firebase_service.dart';
 class DocumentProvider extends ChangeNotifier {
   List<Map<String, dynamic>> _documents = [];
   bool _isLoading = false;
+  StreamSubscription? _docSub;
 
   List<Map<String, dynamic>> get documents => _documents;
   bool get isLoading => _isLoading;
 
   void loadDocuments(String employeeId) {
+    _docSub?.cancel();
     _isLoading = true;
     notifyListeners();
-    FirebaseService.documents
+    _docSub = FirebaseService.documents
         .where('employeeId', isEqualTo: employeeId)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .listen((snapshot) {
       _documents = snapshot.docs.map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>}).toList();
+      _isLoading = false;
+      notifyListeners();
+    }, onError: (e) {
       _isLoading = false;
       notifyListeners();
     });
@@ -54,5 +60,11 @@ class DocumentProvider extends ChangeNotifier {
     } catch (_) {
       return false;
     }
+  }
+
+  @override
+  void dispose() {
+    _docSub?.cancel();
+    super.dispose();
   }
 }

@@ -49,12 +49,14 @@ class LeaveRepository {
     await FirebaseService.leaves.doc(id).update({'status': 'cancelled'});
   }
 
-  Future<int> getLeaveBalance(String employeeId, String type) async {
-    final doc = await FirebaseService.leaveBalances
+  Stream<int> getLeaveBalance(String employeeId, String type) {
+    return FirebaseService.leaveBalances
         .where('employeeId', isEqualTo: employeeId)
         .where('type', isEqualTo: type)
-        .get();
-    if (doc.docs.isEmpty) return 0;
-    return (doc.docs.first.data() as Map<String, dynamic>)['balance'] ?? 0;
+        .snapshots()
+        .map((snapshot) {
+      if (snapshot.docs.isEmpty) return 0;
+      return (snapshot.docs.first.data() as Map<String, dynamic>)['balance'] ?? 0;
+    });
   }
 }

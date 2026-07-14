@@ -5,6 +5,7 @@ import '../../providers/employee_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../data/models/employee_model.dart';
+import '../../../core/theme/app_theme.dart';
 
 class EmployeeListPage extends StatefulWidget {
   const EmployeeListPage({super.key});
@@ -66,7 +67,7 @@ class _EmployeeListPageState extends State<EmployeeListPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Chip(
-                label: Text(provider.departments.firstWhere((d) => d['id'] == _selectedDepartment, orElse: () => {'name': _selectedDepartment})['name']),
+                label: Text(provider.departments.firstWhere((d) => d['id'] == _selectedDepartment, orElse: () => {'name': _selectedDepartment})['name']?.toString() ?? _selectedDepartment ?? '-'),
                 onDeleted: () => setState(() => _selectedDepartment = null),
               ),
             ),
@@ -76,9 +77,9 @@ class _EmployeeListPageState extends State<EmployeeListPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.people_outline, size: 64, color: Colors.grey.shade400),
+                        Icon(Icons.people_outline, size: 64, color: AppTheme.textHint(context)),
                         const SizedBox(height: 16),
-                        Text('Tidak ada karyawan', style: TextStyle(color: Colors.grey.shade600)),
+                        Text('Tidak ada karyawan', style: TextStyle(color: AppTheme.textSecondary(context))),
                       ],
                     ),
                   )
@@ -94,17 +95,17 @@ class _EmployeeListPageState extends State<EmployeeListPage> {
                             child: Text(Helpers.getInitials(employee.name), style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold)),
                           ),
                           title: Text(employee.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                          subtitle: Text('${employee.nip} - ${employee.positionId ?? '-'}'),
+                          subtitle: Text('${employee.nip} - ${employee.positionId ?? '-'}', style: TextStyle(color: AppTheme.textSecondary(context))),
                           trailing: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: employee.isActive ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                              color: employee.isActive ? AppTheme.statusApproved(context).withOpacity(0.1) : AppTheme.statusRejected(context).withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               employee.isActive ? 'Aktif' : 'Nonaktif',
                               style: TextStyle(
-                                color: employee.isActive ? Colors.green : Colors.red,
+                                color: employee.isActive ? AppTheme.statusApproved(context) : AppTheme.statusRejected(context),
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -139,7 +140,7 @@ class _EmployeeListPageState extends State<EmployeeListPage> {
             const Text('Departemen', style: TextStyle(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             ...provider.departments.map((dept) => ListTile(
-              title: Text(dept['name']),
+              title: Text('${dept['name'] ?? '-'}'),
               leading: Radio<String?>(
                 value: dept['id'],
                 groupValue: _selectedDepartment,

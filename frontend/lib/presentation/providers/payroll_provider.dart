@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../data/models/payroll_model.dart';
 import '../../data/repositories/payroll_repository.dart';
@@ -9,6 +10,8 @@ class PayrollProvider extends ChangeNotifier {
   PayslipModel? _selectedPayslip;
   bool _isLoading = false;
   String? _error;
+  StreamSubscription? _periodSub;
+  StreamSubscription? _payslipSub;
 
   List<PayrollPeriodModel> get periods => _periods;
   List<PayslipModel> get payslips => _payslips;
@@ -17,26 +20,28 @@ class PayrollProvider extends ChangeNotifier {
   String? get error => _error;
 
   PayrollProvider() {
-    loadPeriods();
-  }
-
-  void loadPeriods() {
-    _repository.getPayrollPeriods().listen((data) {
+    _periodSub = _repository.getPayrollPeriods().listen((data) {
       _periods = data;
+      notifyListeners();
+    }, onError: (e) {
+      _error = e.toString();
       notifyListeners();
     });
   }
 
-  Future<void> loadPayslips(String employeeId) async {
+  void loadPayslips(String employeeId) {
+    _payslipSub?.cancel();
     _isLoading = true;
     notifyListeners();
-    try {
-      _payslips = await _repository.getEmployeePayslips(employeeId);
-    } catch (e) {
+    _payslipSub = _repository.getEmployeePayslips(employeeId).listen((data) {
+      _payslips = data;
+      _isLoading = false;
+      notifyListeners();
+    }, onError: (e) {
+      _isLoading = false;
       _error = e.toString();
-    }
-    _isLoading = false;
-    notifyListeners();
+      notifyListeners();
+    });
   }
 
   Future<void> selectPayslip(String id) async {
@@ -46,5 +51,12 @@ class PayrollProvider extends ChangeNotifier {
 
   Future<String> generatePayslipPDF(String payslipId) async {
     return await _repository.generatePayslipPDF(payslipId);
+  }
+
+  @override
+  void dispose() {
+    _periodSub?.cancel();
+    _payslipSub?.cancel();
+    super.dispose();
   }
 }

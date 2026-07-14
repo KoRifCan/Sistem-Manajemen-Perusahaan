@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../data/models/approval_model.dart';
@@ -9,6 +10,8 @@ class ApprovalProvider extends ChangeNotifier {
   List<ApprovalRequestModel> _history = [];
   bool _isLoading = false;
   String? _error;
+  StreamSubscription? _pendingSub;
+  StreamSubscription? _requestsSub;
 
   List<ApprovalRequestModel> get pendingApprovals => _pendingApprovals;
   List<ApprovalRequestModel> get myRequests => _myRequests;
@@ -17,21 +20,26 @@ class ApprovalProvider extends ChangeNotifier {
   String? get error => _error;
 
   void loadPendingApprovals(String approverId) {
-    FirebaseService.approvals
+    _pendingSub?.cancel();
+    _pendingSub = FirebaseService.approvals
         .where('status', isEqualTo: 'pending')
-        .where('steps', arrayContains: {'approverId': approverId, 'status': 'pending'})
         .orderBy('createdAt', descending: true)
         .snapshots()
         .listen((snapshot) {
-      _pendingApprovals = snapshot.docs.map((doc) {
-        return ApprovalRequestModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
-      }).toList();
+      _pendingApprovals = snapshot.docs
+          .map((doc) => ApprovalRequestModel.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+          .where((req) => req.steps.any((s) => s.approverId == approverId && s.status == 'pending'))
+          .toList();
+      notifyListeners();
+    }, onError: (e) {
+      _error = e.toString();
       notifyListeners();
     });
   }
 
   void loadMyRequests(String requesterId) {
-    FirebaseService.approvals
+    _requestsSub?.cancel();
+    _requestsSub = FirebaseService.approvals
         .where('requesterId', isEqualTo: requesterId)
         .orderBy('createdAt', descending: true)
         .snapshots()
@@ -39,6 +47,9 @@ class ApprovalProvider extends ChangeNotifier {
       _myRequests = snapshot.docs.map((doc) {
         return ApprovalRequestModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
       }).toList();
+      notifyListeners();
+    }, onError: (e) {
+      _error = e.toString();
       notifyListeners();
     });
   }
@@ -82,6 +93,18 @@ class ApprovalProvider extends ChangeNotifier {
   }
 
   Future<void> submitApproval(ApprovalRequestModel request) async {
-    await FirebaseService.approvals.add(request.toMap());
+    try {
+      await FirebaseService.approvals.add(request.toMap());
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    }
+  }
+
+  @override
+  void dispose() {
+    _pendingSub?.cancel();
+    _requestsSub?.cancel();
+    super.dispose();
   }
 }

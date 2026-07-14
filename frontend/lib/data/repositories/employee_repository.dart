@@ -34,13 +34,15 @@ class EmployeeRepository {
     await FirebaseService.employees.doc(id).update({'isActive': false, 'updatedAt': DateTime.now()});
   }
 
-  Future<List<Map<String, dynamic>>> getDepartments() async {
-    final snapshot = await FirebaseService.departments.orderBy('name').get();
-    return snapshot.docs.map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>}).toList();
+  Stream<List<Map<String, dynamic>>> getDepartments() {
+    return FirebaseService.departments.orderBy('name').snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>}).toList();
+    });
   }
 
-  Future<List<Map<String, dynamic>>> getPositions() async {
-    final snapshot = await FirebaseService.positions.orderBy('name').get();
-    return snapshot.docs.map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>}).toList();
+  Stream<List<Map<String, dynamic>>> getPositions() {
+    return FirebaseService.positions.orderBy('name').snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>}).toList();
+    });
   }
 }

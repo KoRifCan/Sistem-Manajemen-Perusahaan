@@ -51,7 +51,7 @@ class AppRouter {
           ),
           GoRoute(
             path: '/employees/:id',
-            builder: (context, state) => EmployeeDetailPage(id: state.pathParameters['id']!),
+            builder: (context, state) => EmployeeDetailPage(id: state.pathParameters['id'] ?? ''),
           ),
           GoRoute(
             path: '/employees/:id/edit',
@@ -75,7 +75,7 @@ class AppRouter {
           ),
           GoRoute(
             path: '/payroll/:id',
-            builder: (context, state) => PayslipDetailPage(id: state.pathParameters['id']!),
+            builder: (context, state) => PayslipDetailPage(id: state.pathParameters['id'] ?? ''),
           ),
           GoRoute(
             path: '/approvals',

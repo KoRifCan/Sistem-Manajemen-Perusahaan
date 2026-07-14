@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/employee_provider.dart';
 import '../../../core/utils/helpers.dart';
+import '../../../core/theme/app_theme.dart';
 
 class EmployeeDetailPage extends StatelessWidget {
   final String id;
@@ -46,17 +47,17 @@ class EmployeeDetailPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(employee.name, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                  Text(employee.nip, style: TextStyle(color: Colors.grey.shade600)),
+                  Text(employee.nip, style: TextStyle(color: AppTheme.textSecondary(context))),
                   const SizedBox(height: 4),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: employee.isActive ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                      color: employee.isActive ? AppTheme.statusApproved(context).withOpacity(0.1) : AppTheme.statusRejected(context).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       employee.isActive ? 'Aktif' : 'Nonaktif',
-                      style: TextStyle(color: employee.isActive ? Colors.green : Colors.red, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: employee.isActive ? AppTheme.statusApproved(context) : AppTheme.statusRejected(context), fontWeight: FontWeight.w600),
                     ),
                   ),
                 ],
@@ -118,7 +119,7 @@ class EmployeeDetailPage extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 140, child: Text(label, style: TextStyle(color: Colors.grey.shade600))),
+          SizedBox(width: 140, child: Text(label, style: TextStyle(color: AppTheme.textSecondary(context)))),
           Expanded(child: Text(value, style: const TextStyle(fontWeight: FontWeight.w500))),
         ],
       ),

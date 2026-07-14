@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../providers/leave_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../../core/utils/helpers.dart';
+import '../../../core/theme/app_theme.dart';
 
 class LeavePage extends StatefulWidget {
   const LeavePage({super.key});
@@ -36,11 +37,11 @@ class _LeavePageState extends State<LeavePage> {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  Expanded(child: _buildLeaveType(context, 'Cuti Tahunan', '8', '12', Colors.blue)),
+                  Expanded(child: _buildLeaveType(context, 'Cuti Tahunan', '8', '12', AppTheme.statusDefault(context))),
                   const SizedBox(width: 8),
-                  Expanded(child: _buildLeaveType(context, 'Cuti Sakit', '3', '5', Colors.red)),
+                  Expanded(child: _buildLeaveType(context, 'Cuti Sakit', '3', '5', AppTheme.statusRejected(context))),
                   const SizedBox(width: 8),
-                  Expanded(child: _buildLeaveType(context, 'Cuti Besar', '0', '1', Colors.orange)),
+                  Expanded(child: _buildLeaveType(context, 'Cuti Besar', '0', '1', AppTheme.statusPending(context))),
                 ],
               ),
             ),
@@ -53,9 +54,9 @@ class _LeavePageState extends State<LeavePage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.beach_access, size: 64, color: Colors.grey.shade400),
+                            Icon(Icons.beach_access, size: 64, color: AppTheme.textHint(context)),
                             const SizedBox(height: 16),
-                            Text('Belum ada pengajuan cuti', style: TextStyle(color: Colors.grey.shade600)),
+                            Text('Belum ada pengajuan cuti', style: TextStyle(color: AppTheme.textSecondary(context))),
                           ],
                         ),
                       )
@@ -69,10 +70,10 @@ class _LeavePageState extends State<LeavePage> {
                               leading: Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: _getStatusColor(leave.status).withOpacity(0.1),
+                                  color: _getStatusColor(context, leave.status).withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Icon(_getStatusIcon(leave.status), color: _getStatusColor(leave.status)),
+                                child: Icon(_getStatusIcon(leave.status), color: _getStatusColor(context, leave.status)),
                               ),
                               title: Text(leave.type, style: const TextStyle(fontWeight: FontWeight.w600)),
                               subtitle: Column(
@@ -85,12 +86,12 @@ class _LeavePageState extends State<LeavePage> {
                               trailing: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: _getStatusColor(leave.status).withOpacity(0.1),
+                                  color: _getStatusColor(context, leave.status).withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
                                   leave.status.toUpperCase(),
-                                  style: TextStyle(color: _getStatusColor(leave.status), fontWeight: FontWeight.bold, fontSize: 11),
+                                  style: TextStyle(color: _getStatusColor(context, leave.status), fontWeight: FontWeight.bold, fontSize: 11),
                                 ),
                               ),
                               isThreeLine: true,
@@ -111,10 +112,10 @@ class _LeavePageState extends State<LeavePage> {
   Widget _buildLeaveType(BuildContext context, String label, String used, String total, Color color) {
     return Column(
       children: [
-        Text(label, style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+        Text(label, style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 12)),
         const SizedBox(height: 4),
         Text(used, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: color)),
-        Text('/ $total hari', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+        Text('/ $total hari', style: TextStyle(color: AppTheme.textHint(context), fontSize: 12)),
         const SizedBox(height: 8),
         LinearProgressIndicator(
           value: int.tryParse(used) != null && int.tryParse(total) != null ? int.parse(used) / int.parse(total) : 0,
@@ -125,13 +126,13 @@ class _LeavePageState extends State<LeavePage> {
     );
   }
 
-  Color _getStatusColor(String status) {
+  Color _getStatusColor(BuildContext context, String status) {
     switch (status) {
-      case 'pending': return Colors.orange;
-      case 'approved': return Colors.green;
-      case 'rejected': return Colors.red;
-      case 'cancelled': return Colors.grey;
-      default: return Colors.grey;
+      case 'pending': return AppTheme.statusPending(context);
+      case 'approved': return AppTheme.statusApproved(context);
+      case 'rejected': return AppTheme.statusRejected(context);
+      case 'cancelled': return AppTheme.textSecondary(context);
+      default: return AppTheme.textSecondary(context);
     }
   }
 

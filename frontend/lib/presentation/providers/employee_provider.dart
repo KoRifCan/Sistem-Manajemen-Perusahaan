@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../data/models/employee_model.dart';
 import '../../data/repositories/employee_repository.dart';
@@ -10,6 +11,9 @@ class EmployeeProvider extends ChangeNotifier {
   List<Map<String, dynamic>> _positions = [];
   bool _isLoading = false;
   String? _error;
+  StreamSubscription? _employeeSub;
+  StreamSubscription? _deptSub;
+  StreamSubscription? _positionSub;
 
   List<EmployeeModel> get employees => _employees;
   EmployeeModel? get selectedEmployee => _selectedEmployee;
@@ -19,28 +23,35 @@ class EmployeeProvider extends ChangeNotifier {
   String? get error => _error;
 
   EmployeeProvider() {
-    loadDepartments();
-    loadPositions();
-  }
-
-  void loadEmployees({String? departmentId}) {
-    _isLoading = true;
-    notifyListeners();
-    _repository.getAllEmployees(departmentId: departmentId).listen((data) {
-      _employees = data;
-      _isLoading = false;
+    _deptSub = _repository.getDepartments().listen((data) {
+      _departments = data;
+      notifyListeners();
+    }, onError: (e) {
+      _error = e.toString();
+      notifyListeners();
+    });
+    _positionSub = _repository.getPositions().listen((data) {
+      _positions = data;
+      notifyListeners();
+    }, onError: (e) {
+      _error = e.toString();
       notifyListeners();
     });
   }
 
-  Future<void> loadDepartments() async {
-    _departments = await _repository.getDepartments();
+  void loadEmployees({String? departmentId}) {
+    _employeeSub?.cancel();
+    _isLoading = true;
     notifyListeners();
-  }
-
-  Future<void> loadPositions() async {
-    _positions = await _repository.getPositions();
-    notifyListeners();
+    _employeeSub = _repository.getAllEmployees(departmentId: departmentId).listen((data) {
+      _employees = data;
+      _isLoading = false;
+      notifyListeners();
+    }, onError: (e) {
+      _isLoading = false;
+      _error = e.toString();
+      notifyListeners();
+    });
   }
 
   Future<void> addEmployee(EmployeeModel employee) async {
@@ -73,5 +84,13 @@ class EmployeeProvider extends ChangeNotifier {
   void selectEmployee(EmployeeModel? employee) {
     _selectedEmployee = employee;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _employeeSub?.cancel();
+    _deptSub?.cancel();
+    _positionSub?.cancel();
+    super.dispose();
   }
 }

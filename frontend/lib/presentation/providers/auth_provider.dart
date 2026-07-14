@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../data/models/user_model.dart';
 import '../../data/repositories/auth_repository.dart';
@@ -7,6 +8,8 @@ class AuthProvider extends ChangeNotifier {
   UserModel? _user;
   bool _isLoading = false;
   String? _error;
+  StreamSubscription? _authSub;
+  StreamSubscription? _userSub;
 
   UserModel? get user => _user;
   bool get isLoading => _isLoading;
@@ -14,24 +17,26 @@ class AuthProvider extends ChangeNotifier {
   String? get error => _error;
 
   AuthProvider() {
-    _repository.authStateChanges.listen((firebaseUser) {
+    _authSub = _repository.authStateChanges.listen((firebaseUser) {
       if (firebaseUser == null) {
+      _userSub?.cancel();
         _user = null;
         notifyListeners();
       } else {
-        _loadUser(firebaseUser.uid);
+        _loadUser();
       }
-    });
+    }, onError: (e) => debugPrint('AuthProvider stream error: $e'));
   }
 
-  Future<void> _loadUser(String uid) async {
-    try {
-      _user = await _repository.getCurrentUserData();
+  void _loadUser() {
+    _userSub?.cancel();
+    _userSub = _repository.getCurrentUserData().listen((user) {
+      _user = user;
       notifyListeners();
-    } catch (_) {
+    }, onError: (e) {
       _user = null;
       notifyListeners();
-    }
+    });
   }
 
   Future<bool> login(String email, String password) async {
@@ -69,6 +74,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
+    _userSub?.cancel();
     await _repository.logout();
     _user = null;
     notifyListeners();
@@ -77,5 +83,12 @@ class AuthProvider extends ChangeNotifier {
   void clearError() {
     _error = null;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _authSub?.cancel();
+    _userSub?.cancel();
+    super.dispose();
   }
 }

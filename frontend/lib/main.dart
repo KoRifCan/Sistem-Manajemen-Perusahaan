@@ -25,7 +25,11 @@ void main() async {
     debugPrint('Firebase init error: $e');
   }
   final settings = SettingsProvider();
-  await settings.init();
+  try {
+    await settings.init();
+  } catch (e) {
+    debugPrint('Settings init error: $e');
+  }
   runApp(SistemManajemenPerusahaanApp(settings: settings));
 }
 

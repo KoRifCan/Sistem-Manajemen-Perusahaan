@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../data/datasources/firebase_service.dart';
+import '../../data/utils/firestore_helpers.dart';
 
 class AppNotification {
   final String id;
@@ -28,7 +30,7 @@ class AppNotification {
       body: map['body'] ?? '',
       type: map['type'] ?? '',
       isRead: map['isRead'] ?? false,
-      createdAt: (map['createdAt'] as DateTime?) ?? DateTime.now(),
+      createdAt: toDateTime(map['createdAt']) ?? DateTime.now(),
       referenceId: map['referenceId'],
     );
   }
@@ -38,13 +40,15 @@ class NotificationProvider extends ChangeNotifier {
   List<AppNotification> _notifications = [];
   int _unreadCount = 0;
   bool _isLoading = false;
+  StreamSubscription? _notifSub;
 
   List<AppNotification> get notifications => _notifications;
   int get unreadCount => _unreadCount;
   bool get isLoading => _isLoading;
 
   void loadNotifications(String userId) {
-    FirebaseService.notifications
+    _notifSub?.cancel();
+    _notifSub = FirebaseService.notifications
         .where('userId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)
         .snapshots()
@@ -53,6 +57,9 @@ class NotificationProvider extends ChangeNotifier {
         return AppNotification.fromMap(doc.data() as Map<String, dynamic>, doc.id);
       }).toList();
       _unreadCount = _notifications.where((n) => !n.isRead).length;
+      notifyListeners();
+    }, onError: (e) {
+      _isLoading = false;
       notifyListeners();
     });
   }
@@ -71,5 +78,11 @@ class NotificationProvider extends ChangeNotifier {
       batch.update(doc.reference, {'isRead': true});
     }
     await batch.commit();
+  }
+
+  @override
+  void dispose() {
+    _notifSub?.cancel();
+    super.dispose();
   }
 }

@@ -28,10 +28,13 @@ class Helpers {
   static String getInitials(String name) {
     if (name.isEmpty) return '?';
     final parts = name.split(' ');
-    if (parts.length >= 2) {
+    if (parts.length >= 2 && parts[0].isNotEmpty && parts[1].isNotEmpty) {
       return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
     }
-    return parts[0][0].toUpperCase();
+    if (parts.isNotEmpty && parts[0].isNotEmpty) {
+      return parts[0][0].toUpperCase();
+    }
+    return '?';
   }
 
   static String generateNIP(DateTime joinDate, int sequence) {

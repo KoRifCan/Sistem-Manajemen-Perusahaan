@@ -142,7 +142,7 @@ class _LeaveFormPageState extends State<LeaveFormPage> {
     final leave = LeaveModel(
       id: '',
       employeeId: user.uid,
-      type: _leaveType!,
+      type: _leaveType ?? '',
       startDate: _startDate,
       endDate: _endDate,
       totalDays: _totalDays,

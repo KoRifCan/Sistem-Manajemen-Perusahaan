@@ -210,14 +210,14 @@ class _EmployeeFormPageState extends State<EmployeeFormPage> {
                   Expanded(child: DropdownButtonFormField<String>(
                     value: _departmentId,
                     decoration: const InputDecoration(labelText: 'Departemen'),
-                    items: provider.departments.map((d) => DropdownMenuItem<String>(value: d['id'] as String?, child: Text(d['name'] as String))).toList(),
+                    items: provider.departments.map((d) => DropdownMenuItem<String>(value: d['id']?.toString(), child: Text('${d['name'] ?? '-'}'))).toList(),
                     onChanged: (v) => setState(() => _departmentId = v),
                   )),
                   const SizedBox(width: 12),
                   Expanded(child: DropdownButtonFormField<String>(
                     value: _positionId,
                     decoration: const InputDecoration(labelText: 'Jabatan'),
-                    items: provider.positions.map((p) => DropdownMenuItem<String>(value: p['id'] as String?, child: Text(p['name'] as String))).toList(),
+                    items: provider.positions.map((p) => DropdownMenuItem<String>(value: p['id']?.toString(), child: Text('${p['name'] ?? '-'}'))).toList(),
                     onChanged: (v) => setState(() => _positionId = v),
                   )),
                 ],

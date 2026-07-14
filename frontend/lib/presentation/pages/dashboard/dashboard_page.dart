@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/approval_provider.dart';
+import '../../../data/models/approval_model.dart';
 import '../../../core/utils/helpers.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../widgets/company_logo.dart';
@@ -137,7 +138,7 @@ class _DashboardPageState extends State<DashboardPage> {
           children: [
             Text('Ringkasan', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
             const Spacer(),
-            Text('Bulan ini', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+            Text('Bulan ini', style: TextStyle(color: AppTheme.textHint(context), fontSize: 12)),
           ],
         ),
         const SizedBox(height: 12),
@@ -192,7 +193,7 @@ class _DashboardPageState extends State<DashboardPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(stat.title, style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+                Text(stat.title, style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 13)),
                 const SizedBox(height: 4),
                 Text(stat.value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
               ],
@@ -215,7 +216,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget _buildPendingApprovals(BuildContext context, List<dynamic> pendingApprovals, bool isDark) {
+  Widget _buildPendingApprovals(BuildContext context, List<ApprovalRequestModel> pendingApprovals, bool isDark) {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
@@ -262,9 +263,9 @@ class _DashboardPageState extends State<DashboardPage> {
               padding: const EdgeInsets.symmetric(vertical: 32),
               child: Column(
                 children: [
-                  Icon(Icons.check_circle_outline, size: 48, color: Colors.grey.shade400),
+                  Icon(Icons.check_circle_outline, size: 48, color: AppTheme.textHint(context)),
                   const SizedBox(height: 8),
-                  Text('Tidak ada approval pending', style: TextStyle(color: Colors.grey.shade500)),
+                  Text('Tidak ada approval pending', style: TextStyle(color: AppTheme.textHint(context))),
                 ],
               ),
             )

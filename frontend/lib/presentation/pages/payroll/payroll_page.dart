@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../providers/payroll_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../../core/utils/helpers.dart';
+import '../../../core/theme/app_theme.dart';
 
 class PayrollPage extends StatefulWidget {
   const PayrollPage({super.key});
@@ -106,9 +107,9 @@ class _PayrollPageState extends State<PayrollPage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.receipt_long_outlined, size: 64, color: Colors.grey.shade400),
+                            Icon(Icons.receipt_long_outlined, size: 64, color: AppTheme.textHint(context)),
                             const SizedBox(height: 16),
-                            Text('Belum ada slip gaji', style: TextStyle(color: Colors.grey.shade600)),
+                            Text('Belum ada slip gaji', style: TextStyle(color: AppTheme.textSecondary(context))),
                           ],
                         ),
                       )
@@ -122,15 +123,15 @@ class _PayrollPageState extends State<PayrollPage> {
                               leading: Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: payslip.status == 'paid' ? Colors.green.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
+                                  color: payslip.status == 'paid' ? AppTheme.statusApproved(context).withOpacity(0.1) : AppTheme.statusPending(context).withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Icon(
                                   payslip.status == 'paid' ? Icons.check_circle : Icons.pending,
-                                  color: payslip.status == 'paid' ? Colors.green : Colors.orange,
+                                  color: payslip.status == 'paid' ? AppTheme.statusApproved(context) : AppTheme.statusPending(context),
                                 ),
                               ),
-                              title: Text(Helpers.formatMonthYear(DateTime.now()), style: const TextStyle(fontWeight: FontWeight.w600)),
+                              title: Text(Helpers.formatMonthYear(payslip.createdAt), style: const TextStyle(fontWeight: FontWeight.w600)),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

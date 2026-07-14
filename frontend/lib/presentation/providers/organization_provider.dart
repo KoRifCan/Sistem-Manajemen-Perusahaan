@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../data/datasources/firebase_service.dart';
@@ -9,6 +10,10 @@ class OrganizationProvider extends ChangeNotifier {
   Map<String, dynamic>? _companyProfile;
   bool _isLoading = false;
   String? _error;
+  StreamSubscription? _deptSub;
+  StreamSubscription? _positionSub;
+  StreamSubscription? _gradeSub;
+  StreamSubscription? _profileSub;
 
   List<Map<String, dynamic>> get departments => _departments;
   List<Map<String, dynamic>> get positions => _positions;
@@ -18,6 +23,10 @@ class OrganizationProvider extends ChangeNotifier {
   String? get error => _error;
 
   void loadData() {
+    _deptSub?.cancel();
+    _positionSub?.cancel();
+    _gradeSub?.cancel();
+    _profileSub?.cancel();
     _loadDepartments();
     _loadPositions();
     _loadGrades();
@@ -25,32 +34,44 @@ class OrganizationProvider extends ChangeNotifier {
   }
 
   void _loadDepartments() {
-    FirebaseService.departments.orderBy('name').snapshots().listen((snapshot) {
+    _deptSub = FirebaseService.departments.orderBy('name').snapshots().listen((snapshot) {
       _departments = snapshot.docs.map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>}).toList();
+      notifyListeners();
+    }, onError: (e) {
+      _error = e.toString();
       notifyListeners();
     });
   }
 
   void _loadPositions() {
-    FirebaseService.positions.orderBy('name').snapshots().listen((snapshot) {
+    _positionSub = FirebaseService.positions.orderBy('name').snapshots().listen((snapshot) {
       _positions = snapshot.docs.map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>}).toList();
+      notifyListeners();
+    }, onError: (e) {
+      _error = e.toString();
       notifyListeners();
     });
   }
 
   void _loadGrades() {
-    FirebaseService.positionGrades.orderBy('level').snapshots().listen((snapshot) {
+    _gradeSub = FirebaseService.positionGrades.orderBy('level').snapshots().listen((snapshot) {
       _grades = snapshot.docs.map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>}).toList();
+      notifyListeners();
+    }, onError: (e) {
+      _error = e.toString();
       notifyListeners();
     });
   }
 
   void _loadCompanyProfile() {
-    FirebaseService.company.doc('profile').snapshots().listen((doc) {
+    _profileSub = FirebaseService.company.doc('profile').snapshots().listen((doc) {
       if (doc.exists) {
         _companyProfile = {'id': doc.id, ...doc.data() as Map<String, dynamic>};
         notifyListeners();
       }
+    }, onError: (e) {
+      _error = e.toString();
+      notifyListeners();
     });
   }
 
@@ -74,5 +95,14 @@ class OrganizationProvider extends ChangeNotifier {
 
   Future<void> updateCompanyProfile(Map<String, dynamic> data) async {
     await FirebaseService.company.doc('profile').set(data, SetOptions(merge: true));
+  }
+
+  @override
+  void dispose() {
+    _deptSub?.cancel();
+    _positionSub?.cancel();
+    _gradeSub?.cancel();
+    _profileSub?.cancel();
+    super.dispose();
   }
 }

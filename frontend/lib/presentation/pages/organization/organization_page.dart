@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/organization_provider.dart';
+import '../../../core/theme/app_theme.dart';
 
 class OrganizationPage extends StatefulWidget {
   const OrganizationPage({super.key});
@@ -67,9 +68,9 @@ class _OrganizationPageState extends State<OrganizationPage> with SingleTickerPr
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.account_tree, size: 64, color: Colors.grey.shade400),
+            Icon(Icons.account_tree, size: 64, color: AppTheme.textHint(context)),
             const SizedBox(height: 16),
-            Text('Belum ada departemen', style: TextStyle(color: Colors.grey.shade600)),
+            Text('Belum ada departemen', style: TextStyle(color: AppTheme.textSecondary(context))),
             const SizedBox(height: 8),
             ElevatedButton(onPressed: _showAddDialog, child: const Text('Tambah Departemen')),
           ],
@@ -81,25 +82,26 @@ class _OrganizationPageState extends State<OrganizationPage> with SingleTickerPr
       itemCount: depts.length,
       itemBuilder: (context, index) {
         final dept = depts[index];
+        final deptColor = AppTheme.cardColors[index % AppTheme.cardColors.length];
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 4),
           child: ListTile(
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: _getDeptColor(index).withOpacity(0.1),
+                color: deptColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(Icons.folder, color: _getDeptColor(index)),
+              child: Icon(Icons.folder, color: deptColor),
             ),
             title: Text(dept['name'] ?? '-', style: const TextStyle(fontWeight: FontWeight.w600)),
             subtitle: Text(dept['code'] ?? 'Kode: -'),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('${dept['employeeCount'] ?? 0} karyawan', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                Text('${dept['employeeCount'] ?? 0} karyawan', style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 12)),
                 const SizedBox(width: 8),
-                Icon(Icons.chevron_right, color: Colors.grey.shade400),
+                Icon(Icons.chevron_right, color: AppTheme.textHint(context)),
               ],
             ),
           ),
@@ -111,7 +113,7 @@ class _OrganizationPageState extends State<OrganizationPage> with SingleTickerPr
   Widget _buildPositionList(BuildContext context, OrganizationProvider provider, ThemeData theme) {
     final positions = provider.positions;
     if (positions.isEmpty) {
-      return Center(child: Text('Belum ada jabatan', style: TextStyle(color: Colors.grey.shade600)));
+      return Center(child: Text('Belum ada jabatan', style: TextStyle(color: AppTheme.textSecondary(context))));
     }
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -132,7 +134,7 @@ class _OrganizationPageState extends State<OrganizationPage> with SingleTickerPr
   Widget _buildGradeList(BuildContext context, OrganizationProvider provider, ThemeData theme) {
     final grades = provider.grades;
     if (grades.isEmpty) {
-      return Center(child: Text('Belum ada grade', style: TextStyle(color: Colors.grey.shade600)));
+      return Center(child: Text('Belum ada grade', style: TextStyle(color: AppTheme.textSecondary(context))));
     }
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -148,11 +150,6 @@ class _OrganizationPageState extends State<OrganizationPage> with SingleTickerPr
         );
       },
     );
-  }
-
-  Color _getDeptColor(int index) {
-    final colors = [Colors.blue, Colors.green, Colors.orange, Colors.red, Colors.purple, Colors.teal];
-    return colors[index % colors.length];
   }
 
   void _showAddDialog() {

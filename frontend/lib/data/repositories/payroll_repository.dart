@@ -14,14 +14,14 @@ class PayrollRepository {
             }).toList());
   }
 
-  Future<List<PayslipModel>> getEmployeePayslips(String employeeId) async {
-    final snapshot = await FirebaseService.payslips
+  Stream<List<PayslipModel>> getEmployeePayslips(String employeeId) {
+    return FirebaseService.payslips
         .where('employeeId', isEqualTo: employeeId)
         .orderBy('createdAt', descending: true)
-        .get();
-    return snapshot.docs.map((doc) {
-      return PayslipModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
-    }).toList();
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) {
+              return PayslipModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+            }).toList());
   }
 
   Future<PayslipModel?> getPayslipById(String id) async {

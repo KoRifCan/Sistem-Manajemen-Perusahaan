@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/attendance_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../../core/utils/helpers.dart';
+import '../../../core/theme/app_theme.dart';
 
 class AttendancePage extends StatefulWidget {
   const AttendancePage({super.key});
@@ -38,7 +39,7 @@ class _AttendancePageState extends State<AttendancePage> {
                 padding: const EdgeInsets.all(24),
                 child: Column(
                   children: [
-                    Text(Helpers.formatDate(DateTime.now()), style: TextStyle(color: Colors.grey.shade600)),
+                    Text(Helpers.formatDate(DateTime.now()), style: TextStyle(color: AppTheme.textSecondary(context))),
                     const SizedBox(height: 8),
                     Text(Helpers.formatTime(DateTime.now()), style: theme.textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 16),
@@ -81,7 +82,7 @@ class _AttendancePageState extends State<AttendancePage> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(provider.isCheckedIn ? 'Tekan untuk check-out' : 'Tekan untuk check-in', style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+                    Text(provider.isCheckedIn ? 'Tekan untuk check-out' : 'Tekan untuk check-in', style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 13)),
                   ],
                 ),
               ),
@@ -95,18 +96,18 @@ class _AttendancePageState extends State<AttendancePage> {
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: att.status == 'Hadir' ? Colors.green.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
+                    color: att.status == 'Hadir' ? AppTheme.statusApproved(context).withOpacity(0.1) : AppTheme.statusPending(context).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     att.status == 'Hadir' ? Icons.check_circle : Icons.warning,
-                    color: att.status == 'Hadir' ? Colors.green : Colors.orange,
+                    color: att.status == 'Hadir' ? AppTheme.statusApproved(context) : AppTheme.statusPending(context),
                   ),
                 ),
                 title: Text(Helpers.formatDate(att.date)),
                 subtitle: Text('${att.checkIn != null ? Helpers.formatTime(att.checkIn!) : '--:--'} - ${att.checkOut != null ? Helpers.formatTime(att.checkOut!) : '--:--'}'),
                 trailing: Text(att.status ?? '-', style: TextStyle(
-                  color: att.status == 'Hadir' ? Colors.green : Colors.orange,
+                  color: att.status == 'Hadir' ? AppTheme.statusApproved(context) : AppTheme.statusPending(context),
                   fontWeight: FontWeight.w600,
                 )),
               ),
@@ -120,7 +121,7 @@ class _AttendancePageState extends State<AttendancePage> {
   Widget _buildTimeBlock(BuildContext context, String label, String time) {
     return Column(
       children: [
-        Text(label, style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+        Text(label, style: TextStyle(color: AppTheme.textSecondary(context), fontSize: 13)),
         const SizedBox(height: 4),
         Text(time, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
       ],
