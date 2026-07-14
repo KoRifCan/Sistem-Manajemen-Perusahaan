@@ -57,6 +57,55 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  void _showResetPasswordDialog(BuildContext context) {
+    final emailController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reset Password'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Masukkan email untuk menerima link reset password'),
+            const SizedBox(height: 16),
+            TextField(
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                prefixIcon: Icon(Icons.email_outlined),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
+          ElevatedButton(
+            onPressed: () async {
+              if (emailController.text.isEmpty) return;
+              Navigator.pop(context);
+              try {
+                await context.read<AuthProvider>().resetPassword(emailController.text.trim());
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Link reset password telah dikirim ke ${emailController.text.trim()}')),
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Gagal: ${e.toString().replaceAll("Exception: ", "")}')),
+                  );
+                }
+              }
+            },
+            child: const Text('Kirim'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
@@ -140,11 +189,7 @@ class _LoginPageState extends State<LoginPage> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: TextButton(
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Fitur reset password akan tersedia di update berikutnya')),
-                                );
-                              },
+                              onPressed: () => _showResetPasswordDialog(context),
                               style: TextButton.styleFrom(foregroundColor: theme.colorScheme.primary),
                               child: const Text('Lupa password?'),
                             ),

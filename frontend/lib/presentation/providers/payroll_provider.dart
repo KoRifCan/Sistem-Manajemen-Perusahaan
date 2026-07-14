@@ -53,6 +53,24 @@ class PayrollProvider extends ChangeNotifier {
     return await _repository.generatePayslipPDF(payslipId);
   }
 
+  Future<void> createPeriod(PayrollPeriodModel period) async {
+    try {
+      await _repository.createPayrollPeriod(period);
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    }
+  }
+
+  Future<void> processPayroll(String periodId) async {
+    try {
+      await _repository.processPayroll(periodId);
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    }
+  }
+
   @override
   void dispose() {
     _periodSub?.cancel();

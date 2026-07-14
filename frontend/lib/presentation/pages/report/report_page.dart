@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/employee_provider.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/export_utils.dart';
 
 class ReportPage extends StatelessWidget {
   const ReportPage({super.key});
@@ -31,14 +33,14 @@ class ReportPage extends StatelessWidget {
               Text('Export', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
               const SizedBox(height: 12),
               OutlinedButton.icon(
-                onPressed: () => _showExportInfo(context, 'Excel'),
+                onPressed: () => ExportUtils.exportEmployeesToCSV(context),
                 icon: const Icon(Icons.table_chart),
                 label: const Text('Export Excel'),
                 style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 48)),
               ),
               const SizedBox(height: 12),
               OutlinedButton.icon(
-                onPressed: () => _showExportInfo(context, 'PDF'),
+                onPressed: () => ExportUtils.exportEmployeesToPDF(context),
                 icon: const Icon(Icons.picture_as_pdf),
                 label: const Text('Export PDF'),
                 style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 48)),
@@ -72,4 +74,5 @@ class ReportPage extends StatelessWidget {
       SnackBar(content: Text('Export $format akan tersedia di update berikutnya')),
     );
   }
+}
 }

@@ -268,7 +268,7 @@ class SettingsPage extends StatelessWidget {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               if (newPassword.text != confirmPassword.text) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Password baru tidak cocok')),
@@ -281,10 +281,30 @@ class SettingsPage extends StatelessWidget {
                 );
                 return;
               }
+              if (currentPassword.text.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Password saat ini wajib diisi')),
+                );
+                return;
+              }
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Fitur ubah password akan tersedia di update berikutnya')),
-              );
+              try {
+                await context.read<AuthProvider>().changePassword(
+                  currentPassword.text,
+                  newPassword.text,
+                );
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Password berhasil diubah')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Gagal: ${e.toString().replaceAll("Exception: ", "")}')),
+                  );
+                }
+              }
             },
             child: const Text('Simpan'),
           ),

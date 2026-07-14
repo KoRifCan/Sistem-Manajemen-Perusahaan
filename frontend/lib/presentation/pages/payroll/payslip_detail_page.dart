@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../providers/payroll_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../../core/utils/helpers.dart';
+import '../../../core/utils/export_utils.dart';
 import '../../../core/theme/app_theme.dart';
 
 class PayslipDetailPage extends StatelessWidget {
@@ -113,8 +115,21 @@ class PayslipDetailPage extends StatelessWidget {
   }
 
   void _exportPdf(BuildContext context, String id) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('PDF akan tersedia di update berikutnya')),
+    final payslip = context.read<PayrollProvider>().payslips.where((p) => p.id == id).firstOrNull;
+    if (payslip == null) return;
+    ExportUtils.exportPayslipPDF(
+      context,
+      context.read<AuthProvider>().user?.name ?? 'Karyawan',
+      Helpers.formatMonthYear(payslip.createdAt),
+      {
+        'Gaji Pokok': Helpers.formatCurrency(payslip.baseSalary),
+        'Lembur': Helpers.formatCurrency(payslip.overtimePay),
+        'Gaji Kotor': Helpers.formatCurrency(payslip.grossSalary),
+        'PPh 21': '-${Helpers.formatCurrency(payslip.pph21)}',
+        'BPJS Kesehatan': '-${Helpers.formatCurrency(payslip.bpjsKesehatan)}',
+        'BPJS TK': '-${Helpers.formatCurrency(payslip.bpjsKetenagakerjaan)}',
+        'TOTAL': Helpers.formatCurrency(payslip.netSalary),
+      },
     );
   }
 

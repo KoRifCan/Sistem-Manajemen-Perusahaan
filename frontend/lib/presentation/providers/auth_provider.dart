@@ -7,25 +7,31 @@ class AuthProvider extends ChangeNotifier {
   final AuthRepository _repository = AuthRepository();
   UserModel? _user;
   bool _isLoading = false;
+  bool _isInitialized = false;
   String? _error;
   StreamSubscription? _authSub;
   StreamSubscription? _userSub;
 
   UserModel? get user => _user;
   bool get isLoading => _isLoading;
+  bool get isInitialized => _isInitialized;
   bool get isAuthenticated => _user != null;
   String? get error => _error;
 
   AuthProvider() {
     _authSub = _repository.authStateChanges.listen((firebaseUser) {
       if (firebaseUser == null) {
-      _userSub?.cancel();
+        _userSub?.cancel();
         _user = null;
-        notifyListeners();
       } else {
         _loadUser();
       }
-    }, onError: (e) => debugPrint('AuthProvider stream error: $e'));
+      _isInitialized = true;
+      notifyListeners();
+    }, onError: (e) {
+      _isInitialized = true;
+      notifyListeners();
+    });
   }
 
   void _loadUser() {
@@ -78,6 +84,22 @@ class AuthProvider extends ChangeNotifier {
     await _repository.logout();
     _user = null;
     notifyListeners();
+  }
+
+  Future<void> changePassword(String currentPassword, String newPassword) async {
+    try {
+      await _repository.changePassword(currentPassword, newPassword);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> resetPassword(String email) async {
+    try {
+      await _repository.resetPassword(email);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   void clearError() {

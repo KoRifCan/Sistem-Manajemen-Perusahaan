@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/constants/app_constants.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import '../pages/auth/login_page.dart';
 import '../pages/auth/register_page.dart';
 import '../pages/dashboard/dashboard_page.dart';
@@ -25,6 +26,16 @@ import '../widgets/main_scaffold.dart';
 class AppRouter {
   final GoRouter router = GoRouter(
     initialLocation: '/login',
+    redirect: (context, state) {
+      final auth = context.read<AuthProvider>();
+      if (!auth.isInitialized) return null;
+      final isLoggedIn = auth.isAuthenticated;
+      final isLoginRoute = state.matchedLocation == '/login';
+      final isRegisterRoute = state.matchedLocation == '/register';
+      if (isLoggedIn && (isLoginRoute || isRegisterRoute)) return '/dashboard';
+      if (!isLoggedIn && !isLoginRoute && !isRegisterRoute) return '/login';
+      return null;
+    },
     routes: [
       GoRoute(
         path: '/login',

@@ -41,6 +41,11 @@ class Helpers {
     return '${joinDate.year}${joinDate.month.toString().padLeft(2, '0')}${sequence.toString().padLeft(4, '0')}';
   }
 
+  static const List<String> monthNames = [
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+  ];
+
   static int calculateLeaveDays(DateTime start, DateTime end) {
     int days = 0;
     DateTime current = start;

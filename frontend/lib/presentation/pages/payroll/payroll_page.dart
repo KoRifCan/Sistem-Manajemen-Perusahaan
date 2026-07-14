@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import '../../providers/payroll_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../../core/utils/helpers.dart';
+import '../../../core/utils/export_utils.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../data/models/payroll_model.dart';
 
 class PayrollPage extends StatefulWidget {
   const PayrollPage({super.key});
@@ -141,9 +143,21 @@ class _PayrollPageState extends State<PayrollPage> {
                               ),
                               trailing: IconButton(
                                 icon: const Icon(Icons.picture_as_pdf),
-                                onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('PDF akan tersedia di update berikutnya')),
-                                ),
+                                onPressed: () {
+                                  final auth = context.read<AuthProvider>();
+                                  final period = Helpers.formatMonthYear(payslip.createdAt);
+                                  ExportUtils.exportPayslipPDF(
+                                    context,
+                                    auth.user?.name ?? 'Karyawan',
+                                    period,
+                                    {
+                                      'Gaji Pokok': Helpers.formatCurrency(payslip.baseSalary),
+                                      'Gaji Kotor': Helpers.formatCurrency(payslip.grossSalary),
+                                      'Potongan': Helpers.formatCurrency(payslip.pph21 + payslip.bpjsKesehatan + payslip.bpjsKetenagakerjaan + payslip.loanDeduction),
+                                      'TOTAL': Helpers.formatCurrency(payslip.netSalary),
+                                    },
+                                  );
+                                },
                               ),
                               isThreeLine: true,
                               onTap: () => context.go('/payroll/${payslip.id}'),
@@ -158,12 +172,31 @@ class _PayrollPageState extends State<PayrollPage> {
   }
 
   void _processPayroll(BuildContext context) {
+    final provider = context.read<PayrollProvider>();
+    if (provider.periods.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Buat periode payroll terlebih dahulu')),
+      );
+      return;
+    }
+    final activePeriod = provider.periods.firstWhere(
+      (p) => p.status == 'draft',
+      orElse: () => provider.periods.first,
+    );
+    if (activePeriod.status == 'processing') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Payroll sedang diproses')),
+      );
+      return;
+    }
+    provider.processPayroll(activePeriod.id);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Proses payroll akan tersedia di update berikutnya')),
+      const SnackBar(content: Text('Payroll sedang diproses...')),
     );
   }
 
   void _showCreatePeriodDialog(BuildContext context) {
+    final now = DateTime.now();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -174,8 +207,19 @@ class _PayrollPageState extends State<PayrollPage> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
+              final provider = context.read<PayrollProvider>();
+              final period = PayrollPeriodModel(
+                id: '',
+                month: Helpers.monthNames[now.month - 1],
+                year: now.year,
+                startDate: DateTime(now.year, now.month, 1),
+                endDate: DateTime(now.year, now.month + 1, 0),
+                status: 'draft',
+                createdAt: now,
+              );
+              provider.createPeriod(period);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Periode baru akan tersedia di update berikutnya')),
+                const SnackBar(content: Text('Periode baru berhasil dibuat')),
               );
             },
             child: const Text('Buat'),
