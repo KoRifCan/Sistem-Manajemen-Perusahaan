@@ -1,0 +1,151 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: check if user is authenticated
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Helper: get user role
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    // Helper: check user role
+    function hasRole(role) {
+      return isAuth() && getUserRole() == role;
+    }
+
+    function hasAnyRole(roles) {
+      return isAuth() && roles.hasAny([getUserRole()]);
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isAuth() && (request.auth.uid == userId || hasAnyRole(['super_admin', 'hr', 'director', 'manager']));
+      allow write: if isAuth() && (request.auth.uid == userId || hasRole('super_admin'));
+      allow create: if isAuth();
+    }
+
+    // Employees collection
+    match /employees/{employeeId} {
+      allow read: if isAuth();
+      allow write: if hasAnyRole(['super_admin', 'hr']);
+      allow delete: if hasRole('super_admin');
+    }
+
+    // Attendance
+    match /attendance/{docId} {
+      allow read, write: if isAuth();
+    }
+
+    // Leaves
+    match /leaves/{leaveId} {
+      allow read: if isAuth();
+      allow create: if isAuth();
+      allow update: if isAuth();
+    }
+
+    // Payroll
+    match /payroll_periods/{periodId} {
+      allow read: if hasAnyRole(['super_admin', 'hr', 'finance', 'director']);
+      allow write: if hasAnyRole(['super_admin', 'finance']);
+    }
+
+    match /payslips/{payslipId} {
+      allow read: if isAuth();
+      allow write: if hasAnyRole(['super_admin', 'finance']);
+    }
+
+    // Approvals
+    match /approvals/{approvalId} {
+      allow read: if isAuth();
+      allow create: if isAuth();
+      allow update: if isAuth();
+    }
+
+    // Company profile
+    match /company/{docId} {
+      allow read: if isAuth();
+      allow write: if hasRole('super_admin');
+    }
+
+    // Departments
+    match /departments/{deptId} {
+      allow read: if isAuth();
+      allow write: if hasAnyRole(['super_admin', 'hr']);
+    }
+
+    // Positions
+    match /positions/{posId} {
+      allow read: if isAuth();
+      allow write: if hasAnyRole(['super_admin', 'hr']);
+    }
+
+    // Assets
+    match /assets/{assetId} {
+      allow read: if isAuth();
+      allow write: if hasAnyRole(['super_admin', 'hr', 'finance']);
+    }
+
+    match /asset_loans/{loanId} {
+      allow read: if isAuth();
+      allow write: if isAuth();
+    }
+
+    // Documents
+    match /documents/{docId} {
+      allow read: if isAuth();
+      allow create: if isAuth();
+      allow delete: if isAuth();
+    }
+
+    // Notifications
+    match /notifications/{notifId} {
+      allow read: if isAuth();
+      allow write: if isAuth();
+    }
+
+    // Audit logs
+    match /audit_logs/{logId} {
+      allow read: if hasAnyRole(['super_admin', 'director']);
+      allow write: if isAuth();
+    }
+
+    // Roles
+    match /roles/{roleId} {
+      allow read: if isAuth();
+      allow write: if hasRole('super_admin');
+    }
+
+    // Salary components
+    match /salary_components/{compId} {
+      allow read: if isAuth();
+      allow write: if hasAnyRole(['super_admin', 'finance']);
+    }
+
+    // Loans
+    match /loans/{loanId} {
+      allow read: if isAuth();
+      allow write: if hasAnyRole(['super_admin', 'finance']);
+    }
+
+    // Help tickets
+    match /help_tickets/{ticketId} {
+      allow read, write: if isAuth();
+    }
+
+    // Leave balances
+    match /leave_balances/{balanceId} {
+      allow read: if isAuth();
+      allow write: if hasAnyRole(['super_admin', 'hr']);
+    }
+
+    // Default: deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

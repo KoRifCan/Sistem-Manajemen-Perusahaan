@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "sistem-manajemen-perusahaan"
+  },
+  "targets": {
+    "sistem-manajemen-perusahaan": {
+      "hosting": {
+        "smp": [
+          "sistem-manajemen-perusahaan"
+        ]
+      }
+    }
+  }
+}

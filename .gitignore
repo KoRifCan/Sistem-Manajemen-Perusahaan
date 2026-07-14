@@ -1,0 +1,45 @@
+## Flutter
+frontend/build/
+frontend/.dart_tool/
+frontend/.packages
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/pubspec.lock
+frontend/**/ios/Pods/
+frontend/**/ios/.symlinks/
+frontend/**/ios/Flutter/App.framework
+frontend/**/ios/Flutter/Flutter.framework
+frontend/**/ios/Flutter/Flutter.podspec
+frontend/**/ios/Flutter/Generated.xcconfig
+frontend/**/ios/Flutter/ephemeral
+frontend/**/ios/Flutter/app.flx
+frontend/**/ios/Flutter/App.framework
+frontend/**/ios/Flutter/Flutter.framework
+frontend/**/ios/Flutter/Flutter.podspec
+frontend/**/ios/ServiceDefinitions.json
+frontend/**/ios/Runner/GeneratedPluginRegistrant.*
+frontend/**/ios/Runner/GoogleService-Info.plist
+frontend/google-services.json
+
+## Node
+functions/node_modules/
+functions/lib/
+
+## IDE
+.idea/
+.vscode/
+*.iml
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Firebase
+.firebase/
+*.log
+
+## Secrets
+**/*.key
+**/*.pem
+.env
+serviceAccountKey.json
