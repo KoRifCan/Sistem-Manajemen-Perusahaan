@@ -46,17 +46,15 @@ class _PremiumThemeToggleState extends State<PremiumThemeToggle> with SingleTick
 
     return GestureDetector(
       onTap: () {
-        setState(() {
-          if (isDark) {
-            _controller.reverse().then((_) {
-              if (mounted) settings.toggleTheme();
-            });
-          } else {
-            _controller.forward().then((_) {
-              if (mounted) settings.toggleTheme();
-            });
-          }
-        });
+        if (isDark) {
+          _controller.reverse().then((_) {
+            if (mounted) settings.toggleTheme();
+          });
+        } else {
+          _controller.forward().then((_) {
+            if (mounted) settings.toggleTheme();
+          });
+        }
       },
       child: AnimatedBuilder(
         animation: _controller,
