@@ -65,30 +65,30 @@ class EmployeeDetailPage extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             _buildSection(context, 'Data Pribadi', [
-              _buildInfoRow('NIK', employee.nik ?? '-'),
-              _buildInfoRow('Tempat, Tgl Lahir', '${employee.placeOfBirth ?? '-'}, ${employee.dateOfBirth != null ? Helpers.formatDate(employee.dateOfBirth!) : '-'}'),
-              _buildInfoRow('Jenis Kelamin', employee.gender ?? '-'),
-              _buildInfoRow('Agama', employee.religion ?? '-'),
-              _buildInfoRow('Gol. Darah', employee.bloodType ?? '-'),
-              _buildInfoRow('Status Nikah', employee.maritalStatus ?? '-'),
-              _buildInfoRow('Alamat', employee.address ?? '-'),
-              _buildInfoRow('Kota', employee.city ?? '-'),
+              _buildInfoRow(context, 'NIK', employee.nik ?? '-'),
+              _buildInfoRow(context, 'Tempat, Tgl Lahir', '${employee.placeOfBirth ?? '-'}, ${employee.dateOfBirth != null ? Helpers.formatDate(employee.dateOfBirth!) : '-'}'),
+              _buildInfoRow(context, 'Jenis Kelamin', employee.gender ?? '-'),
+              _buildInfoRow(context, 'Agama', employee.religion ?? '-'),
+              _buildInfoRow(context, 'Gol. Darah', employee.bloodType ?? '-'),
+              _buildInfoRow(context, 'Status Nikah', employee.maritalStatus ?? '-'),
+              _buildInfoRow(context, 'Alamat', employee.address ?? '-'),
+              _buildInfoRow(context, 'Kota', employee.city ?? '-'),
             ]),
             const SizedBox(height: 16),
             _buildSection(context, 'Data Kepegawaian', [
-              _buildInfoRow('NIP', employee.nip),
-              _buildInfoRow('Status', employee.status ?? '-'),
-              _buildInfoRow('Tanggal Masuk', Helpers.formatDate(employee.joinDate)),
-              _buildInfoRow('Berakhir Kontrak', employee.contractEndDate != null ? Helpers.formatDate(employee.contractEndDate!) : '-'),
-              _buildInfoRow('Shift', employee.shift ?? '-'),
-              _buildInfoRow('Lokasi Kerja', employee.location ?? '-'),
+              _buildInfoRow(context, 'NIP', employee.nip),
+              _buildInfoRow(context, 'Status', employee.status ?? '-'),
+              _buildInfoRow(context, 'Tanggal Masuk', Helpers.formatDate(employee.joinDate)),
+              _buildInfoRow(context, 'Berakhir Kontrak', employee.contractEndDate != null ? Helpers.formatDate(employee.contractEndDate!) : '-'),
+              _buildInfoRow(context, 'Shift', employee.shift ?? '-'),
+              _buildInfoRow(context, 'Lokasi Kerja', employee.location ?? '-'),
             ]),
             const SizedBox(height: 16),
             _buildSection(context, 'Keuangan', [
-              _buildInfoRow('Gaji Pokok', employee.baseSalary != null ? Helpers.formatCurrency(employee.baseSalary!) : '-'),
-              _buildInfoRow('Status Pajak', employee.taxStatus ?? '-'),
-              _buildInfoRow('Bank', employee.bankName ?? '-'),
-              _buildInfoRow('No. Rekening', employee.bankAccount ?? '-'),
+              _buildInfoRow(context, 'Gaji Pokok', employee.baseSalary != null ? Helpers.formatCurrency(employee.baseSalary!) : '-'),
+              _buildInfoRow(context, 'Status Pajak', employee.taxStatus ?? '-'),
+              _buildInfoRow(context, 'Bank', employee.bankName ?? '-'),
+              _buildInfoRow(context, 'No. Rekening', employee.bankAccount ?? '-'),
             ]),
           ],
         ),
@@ -113,7 +113,7 @@ class EmployeeDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
