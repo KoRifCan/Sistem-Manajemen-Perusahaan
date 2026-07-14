@@ -28,6 +28,15 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  void _handleInstall() {
+    final installed = webInstallPwa();
+    if (!installed && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Buka menu browser → Install / Tambahkan ke Layar Utama')),
+      );
+    }
+  }
+
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
     final auth = context.read<AuthProvider>();
@@ -186,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                               ActionButton(
                                 icon: Icons.download_outlined,
                                 label: 'Install',
-                                onTap: webInstallPwa,
+                                onTap: _handleInstall,
                               ),
                               const SizedBox(width: 24),
                               ActionButton(

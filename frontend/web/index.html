@@ -103,7 +103,9 @@
       if (_installPrompt) {
         _installPrompt.prompt();
         _installPrompt.userChoice.then(function() { _installPrompt = null; });
+        return true;
       }
+      return false;
     };
     window.reloadPage = function() { location.reload(); };
     (function() {

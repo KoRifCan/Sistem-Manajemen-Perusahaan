@@ -20,11 +20,14 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: firebaseOptions);
-  runApp(const SistemManajemenPerusahaanApp());
+  final settings = SettingsProvider();
+  await settings.init();
+  runApp(SistemManajemenPerusahaanApp(settings: settings));
 }
 
 class SistemManajemenPerusahaanApp extends StatelessWidget {
-  const SistemManajemenPerusahaanApp({super.key});
+  final SettingsProvider settings;
+  const SistemManajemenPerusahaanApp({super.key, required this.settings});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +43,7 @@ class SistemManajemenPerusahaanApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AssetProvider()),
         ChangeNotifierProvider(create: (_) => DocumentProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
-        ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ChangeNotifierProvider.value(value: settings),
       ],
       child: Consumer<SettingsProvider>(
         builder: (context, settings, child) {
