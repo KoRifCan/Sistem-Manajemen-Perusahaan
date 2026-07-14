@@ -59,46 +59,26 @@ jobs:
 
       - name: Generate launcher icons
         run: |
+          pip install Pillow -q 2>/dev/null
           python3 << 'PYEOF'
           import os
+          from PIL import Image, ImageDraw, ImageFont
+          size = 192
+          img = Image.new('RGBA', (size, size), (26, 115, 232, 255))
+          draw = ImageDraw.Draw(img)
+          draw.rounded_rectangle([(6, 6), (size-6, size-6)], radius=32, fill=(26, 115, 232, 255))
           try:
-              from PIL import Image, ImageDraw, ImageFont
-              size = 192
-              img = Image.new('RGBA', (size, size), (26, 115, 232, 255))
-              draw = ImageDraw.Draw(img)
-              try:
-                  font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', 120)
-              except Exception:
-                  font = ImageFont.load_default()
-              bbox = draw.textbbox((0, 0), 'S', font=font)
-              tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
-              draw.text(((size - tw) / 2 - bbox[0], (size - th) / 2 - bbox[1]), 'S', fill='white', font=font)
-              img.save('/tmp/icon.png')
-              sizes = {'mdpi': 48, 'hdpi': 72, 'xhdpi': 96, 'xxhdpi': 144, 'xxxhdpi': 192}
-              for dpi, s in sizes.items():
-                  d = os.path.join('android/app/src/main/res', 'mipmap-' + dpi)
-                  os.makedirs(d, exist_ok=True)
-                  img.resize((s, s), Image.LANCZOS).save(os.path.join(d, 'ic_launcher.png'))
-          except ImportError:
-              import struct, zlib
-              def create_png(psize, path):
-                  def chunk(ctype, data):
-                      c = ctype + data
-                      return struct.pack('>I', len(data)) + c + struct.pack('>I', zlib.crc32(c) & 0xffffffff)
-                  sig = b'\x89PNG\r\n\x1a\n'
-                  ihdr = chunk(b'IHDR', struct.pack('>IIBBBBB', psize, psize, 8, 2, 0, 0, 0))
-                  raw = b''
-                  for y in range(psize):
-                      raw += b'\x00' + b'\x41\x95\xF5' * psize
-                  idat = chunk(b'IDAT', zlib.compress(raw))
-                  iend = chunk(b'IEND', b'')
-                  with open(path, 'wb') as f:
-                      f.write(sig + ihdr + idat + iend)
-              sizes = {'mdpi': 48, 'hdpi': 72, 'xhdpi': 96, 'xxhdpi': 144, 'xxxhdpi': 192}
-              for dpi, s in sizes.items():
-                  d = os.path.join('android/app/src/main/res', 'mipmap-' + dpi)
-                  os.makedirs(d, exist_ok=True)
-                  create_png(s, os.path.join(d, 'ic_launcher.png'))
+              font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', 110)
+          except Exception:
+              font = ImageFont.load_default()
+          bbox = draw.textbbox((0, 0), 'S', font=font)
+          tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+          draw.text(((size - tw) / 2 - bbox[0], (size - th) / 2 - bbox[1]), 'S', fill='white', font=font)
+          sizes = {'mdpi': 48, 'hdpi': 72, 'xhdpi': 96, 'xxhdpi': 144, 'xxxhdpi': 192}
+          for dpi, s in sizes.items():
+              d = os.path.join('android/app/src/main/res', 'mipmap-' + dpi)
+              os.makedirs(d, exist_ok=True)
+              img.resize((s, s), Image.LANCZOS).save(os.path.join(d, 'ic_launcher.png'))
           PYEOF
 
       - name: Build APK
