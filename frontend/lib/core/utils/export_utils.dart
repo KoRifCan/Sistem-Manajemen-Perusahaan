@@ -52,7 +52,7 @@ class ExportUtils {
   static Future<void> exportPayslipPDF(BuildContext context, String employeeName, String period, Map<String, String> items) async {
     final pdf = pw.Document();
     pdf.addPage(
-      pw.Page(
+      pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(32),
         build: (context) => [
